@@ -1,0 +1,6 @@
+{
+  "name": "Chifa Moralillos - Delivery Yurimaguas",
+  "description": "App y web oficial de delivery y pedidos de Chifa Moralillos en Yurimaguas. Chaufas al wok, combos, menús, wantanes y bebidas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chifa Moralillos - Yurimaguas</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- React & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel para JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #141213;
+      color: #f3f4f6;
+    }
+    /* Scrollbar personalizada temática chifa */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1e191b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #4a0d11;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #d97706;
+    }
+  </style>
+</head>
+<body class="bg-[#141213]">
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useMemo } = React;
+
+    // --- COMPONENTE DE ICONOS SVG LIMPIO PARA REACT ---
+    const Icon = ({ name, className = "w-5 h-5" }) => {
+      const icons = {
+        'home': <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10" />,
+        'shopping-bag': <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z M3 6h18 M16 10a4 4 0 0 1-8 0" />,
+        'phone': <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />,
+        'facebook': <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />,
+        'whatsapp': <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />,
+        'bar-chart-3': <path d="M3 3v18h18 M18 17V9 M13 17V5 M8 17v-3" />,
+        'list-ordered': <path d="M10 6h11 M10 12h11 M10 18h11 M4 6h1v4 M4 10h2 M6 18H4c0-1 2-2 2-3s-1-1.5-2-1" />,
+        'package': <path d="m7.5 4.27 9 5.15 M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z M3.27 6.96 12 12.01l8.73-5.05 M12 22.08V12" />,
+        'user-check': <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M16 11l2 2 4-4" />,
+        'log-out': <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9" />,
+        'menu': <path d="M4 12h16 M4 6h16 M4 18h16" />,
+        'flame': <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z" />,
+        'map-pin': <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z M12 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />,
+        'search': <path d="m21 21-4.35-4.35 M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0z" />,
+        'x': <path d="M18 6 6 18 M6 6l12 12" />,
+        'chevron-right': <path d="m9 18 6-6-6-6" />,
+        'plus': <path d="M12 5v14 M5 12h14" />,
+        'minus': <path d="M5 12h14" />,
+        'trash-2': <path d="M3 6h18 M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6 M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2 M10 11v6 M14 11v6" />,
+        'alert-triangle': <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z M12 9v4 M12 17h.01" />,
+        'bike': <path d="M5.5 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z M18.5 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z M15 6h2.5 M12 17l-3-6h4l2 3.5 M12 11 9 6H4" />,
+        'store': <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7 M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8 M2 7h20 M10 12h4" />,
+        'armchair': <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3 M3 11v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z M5 18v3 M19 18v3" />,
+        'check': <path d="m5 12 5 5L20 7" />,
+        'qr-code': <path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3zM14 14h2v2h-2zM18 14h3v3h-3zM14 18h3v3h-3zM18 18h3v3h-3z" />,
+        'message-circle': <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+      };
+
+      return (
+        <svg 
+          className={className} 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+        >
+          {icons[name] || null}
+        </svg>
+      );
+    };
+
+    // --- LOGO OFICIAL DE CHIFA MORALILLOS ---
+    const ChifaLogo = ({ className = "w-10 h-10" }) => (
+      <img 
+        src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=400&q=80" 
+        alt="Chifa Moralillos Logo" 
+        className={`${className} rounded-full object-cover border-2 border-amber-400 shadow-md`}
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = "https://placehold.co/200x200/dc2626/eab308?text=CHIFA";
+        }}
+      />
+    );
+
+    // --- METADATOS Y PLATOS ---
+    const INITIAL_DATA = {
+      restaurantInfo: {
+        name: "CHIFA MORALILLOS",
+        tagline: "¡Auténtica Comida China & Sabor Peruanazo!",
+        address: "Calle Francisco Bardalez N° 701 - Yurimaguas",
+        hours: "Atención todos los días de 11:30 am a 10:30 pm",
+        phone: "(065) 762082",
+        mobile: "941 428 121",
+        whatsapp: "51941428121",
+        paymentNumber: "941 428 121",
+        paymentHolder: "CHIFA MORALILLOS",
+        socials: {
+          facebook: "https://web.facebook.com/profile.php?id=100027272124879"
+        }
+      },
+      categories: [
+        { id: "combos1", name: "COMBOS PARA 1 PERSONA", image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=800&q=80", description: "Combos personales con chaufa, tallarín y wantán frito" },
+        { id: "combos2", name: "COMBOS PARA 2 PERSONAS", image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80", description: "Promociones para compartir con gaseosa incluida" },
+        { id: "combos3", name: "COMBOS PARA 3 PERSONAS", image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80", description: "Banquete oriental con chaufa familiar" },
+        { id: "combos4", name: "COMBOS PARA 4 PERSONAS", image: "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=800&q=80", description: "Grandes banquetes para toda la familia con gaseosas" },
+        { id: "ejecutivo", name: "MENÚ (LUNES A VIERNES)", image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=800&q=80", description: "Incluye entrada: Sopa wantán o wantán frito" },
+        { id: "entradas", name: "ENTRADAS Y WANTANES", image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80", description: "Wantanes crocantes, siumay, chicharrón de pollo y langostinos" },
+        { id: "chaufa", name: "CHAUFA & AEROPUERTOS", image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=800&q=80", description: "Arroz chaufa al wok con pollo, chancho, langostinos y carnes" },
+        { id: "tallarines", name: "TALLARINES SALTADOS", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80", description: "Tallarín Taypa, Sam Si, Sha Jo Fan y variedades" },
+        { id: "pollos", name: "PLATOS CON POLLO", image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=800&q=80", description: "Chijaukay, Tipakay, Limonkay y salteados con verduras" },
+        { id: "chancho", name: "PLATOS CON CHANCHO", image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80", description: "Chancho asado con piña, champiñones, tausi y al ajo" },
+        { id: "plancha", name: "PLATOS A LA PLANCHA", image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80", description: "Taypa especial, pollo y carne tausi servidos humeantes" },
+        { id: "langostinos", name: "ESPECIALIDADES LANGOSTINOS", image: "https://images.unsplash.com/photo-1559742811-822863c46f83?auto=format&fit=crop&w=800&q=80", description: "Langostinos al ajo, con champiñones, tausi y tamarindo" },
+        { id: "sopas", name: "CALDOS Y SOPAS", image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80", description: "Sopa wantán, Womin, Fuchifu y Pac Pow" },
+        { id: "bebidas", name: "REFRESCOS, VINO & CERVEZA", image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=800&q=80", description: "Chicha morada, gaseosas, cerveza helada y vinos chinos" }
+      ],
+      products: [
+        { id: "A1", categoryId: "combos1", name: "A1: Tallarín con pollo + Chaufa + Wantán frito", price: 22.00, description: "Combo personal con tallarín saltado, chaufa al wok y wantanes crujientes", image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=800&q=80" },
+        { id: "A2", categoryId: "combos1", name: "A2: Pollo con verduras + Chaufa", price: 22.00, description: "Trozos de pollo con verduras frescas salteadas y arroz chaufa", image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=800&q=80" },
+        { id: "A3", categoryId: "combos1", name: "A3: Tipakay dulce + Chijaukay salado + Chaufa", price: 25.00, description: "Combinación dúo de pollo agridulce y pollo en salsa salada", image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80" },
+        { id: "A7", categoryId: "combos1", name: "A7: Kam lu wantán + Chijaukay + Chaufa", price: 28.00, description: "Plato surtido especial con wantán preparado, chijaukay y arroz chaufa", image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80" },
+        { id: "A13", categoryId: "combos1", name: "A13: Lomo saltado + Chaufa", price: 25.00, description: "Jugoso lomo saltado criollo acompañado de arroz chaufa", image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80" },
+        { id: "B1", categoryId: "combos2", name: "B1: 1/2 Doc. Wantán + 1 Chijaukay + 2 Chaufas + Gaseosa 1/2L", price: 45.00, description: "Combo completo para 2 personas con bebida incluida", image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80" },
+        { id: "B3", categoryId: "combos2", name: "B3: Tipakay + 2 Porciones de Chaufa", price: 40.00, description: "Pollo tipakay en salsa agridulce con doble chaufa", image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80" },
+        { id: "B12", categoryId: "combos2", name: "B12: Kamlu wantán especial + 2 Porciones de Chaufa", price: 44.00, description: "Abundante Kamlu wantán con carnes mixtas y chaufa doble", image: "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=800&q=80" },
+        { id: "C1", categoryId: "combos3", name: "C1: Chijaukay 2 sabores + Pollo c/ verduras + Chaufa familiar", price: 70.00, description: "Banquete oriental ideal para 3 personas", image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80" },
+        { id: "C3", categoryId: "combos3", name: "C3: Tallarín con pollo + Pollo enrollado + Tipakay + Chaufa familiar", price: 90.00, description: "Gran festín oriental de 4 variedades de platos", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80" },
+        { id: "D1", categoryId: "combos4", name: "D1: Alitas + Pollo a la plancha + Chancho piña + Chijaukay + Chaufa + Gaseosa 1.5L", price: 123.00, description: "Banquete familiar completo para 4 a 5 personas", image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80" },
+        { id: "M1", categoryId: "ejecutivo", name: "1. Chaufa con Pollo + Wantán frito o Sopa", price: 16.00, description: "Incluye sopa wantán o wantanes crujientes de entrada", image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=800&q=80" },
+        { id: "M5", categoryId: "ejecutivo", name: "5. Combinado (Tallarín con pollo y chaufa) + Entrada", price: 19.00, description: "Dúo clásico peruano-chino con entrada a elegir", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80" },
+        { id: "M8", categoryId: "ejecutivo", name: "8. Chijaukay de pollo con chaufa + Entrada", price: 20.00, description: "Jugoso pollo chijaukay salado servido con arroz chaufa", image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=800&q=80" },
+        { id: "G1", categoryId: "chaufa", name: "G1: Chaufa especial", price: 23.00, description: "Arroz chaufa al wok con trozos de pollo, chancho asado y langostinos", image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=800&q=80" },
+        { id: "G2", categoryId: "chaufa", name: "G2: Chaufa con pollo", price: 21.00, description: "Clásico arroz chaufa salteado a fuego alto con suave pechuga", image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=800&q=80" },
+        { id: "G10", categoryId: "chaufa", name: "G10: Aeropuerto de pollo", price: 22.00, description: "Mezcla salteada de arroz chaufa, fideos y frejolito chino", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80" },
+        { id: "E_WANTAN", categoryId: "entradas", name: "Wantán frito (1/2 Docena)", price: 8.00, description: "Crujientes hojuelas de wantán acompañadas de salsa tamarindo", image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80" },
+        { id: "E_SIUMAY", categoryId: "entradas", name: "Siumay de pollo (1/2 Docena)", price: 20.00, description: "Bocaditos dim sum al vapor rellenos de jugoso pollo", image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80" },
+        { id: "REF_1", categoryId: "bebidas", name: "Jarra de Chicha Morada (Familiar 1.5L)", price: 14.00, description: "Chicha morada natural preparada con maíz morado y frutas", image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=800&q=80" },
+        { id: "GAS_1", categoryId: "bebidas", name: "Inca Kola 1.5 Litros", price: 12.00, description: "Gaseosa heladita ideal para acompañar el chifa", image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=800&q=80" }
+      ]
+    };
+
+    const INITIAL_ORDERS = [
+      {
+        id: "ORD-901",
+        date: new Date().toISOString(),
+        customerName: "Carlos Celis",
+        customerPhone: "941428121",
+        serviceType: "delivery",
+        locationDetails: "Calle Comercio N° 420",
+        paymentMethod: "Yape",
+        status: "En preparación",
+        total: 45.00,
+        items: [{ name: "B1: 1/2 Doc. Wantán + 1 Chijaukay + 2 Chaufas", quantity: 1, price: 45.00 }]
+      }
+    ];
+
+    function App() {
+      const [activeTab, setActiveTab] = useState('home');
+      const [selectedCategory, setSelectedCategory] = useState(null);
+      const [searchQuery, setSearchQuery] = useState('');
+      
+      const [products, setProducts] = useState(INITIAL_DATA.products);
+      const [orders, setOrders] = useState(INITIAL_ORDERS);
+      const [cart, setCart] = useState([]);
+      
+      const [detailProduct, setDetailProduct] = useState(null);
+      const [detailQuantity, setDetailQuantity] = useState(1);
+
+      const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+      const [serviceType, setServiceType] = useState('delivery');
+      const [locationDetails, setLocationDetails] = useState('');
+      const [paymentMethod, setPaymentMethod] = useState('Efectivo_Contraentrega');
+      const [customerName, setCustomerName] = useState('');
+      const [customerPhone, setCustomerPhone] = useState('');
+      const [observations, setObservations] = useState('');
+      const [formError, setFormError] = useState('');
+      const [proofFile, setProofFile] = useState(null);
+      const [operationNumber, setOperationNumber] = useState('');
+
+      const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+      const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+      const [showLoginModal, setShowLoginModal] = useState(false);
+      const [loginError, setLoginError] = useState('');
+      const [adminUser, setAdminUser] = useState('');
+      const [adminPass, setAdminPass] = useState('');
+
+      const [reportFilter, setReportFilter] = useState('diario');
+      const [editingProduct, setEditingProduct] = useState(null);
+      const [showProductModal, setShowProductModal] = useState(false);
+      const [productForm, setProductForm] = useState({ id: '', name: '', categoryId: 'chaufa', price: '', description: '', image: '' });
+      const [productToDelete, setProductToDelete] = useState(null);
+
+      const totalCartCount = useMemo(() => cart.reduce((acc, item) => acc + item.quantity, 0), [cart]);
+      const cartSubtotal = useMemo(() => cart.reduce((acc, item) => acc + (item.price * item.quantity), 0), [cart]);
+
+      const handleAddToCart = (product, quantity = 1) => {
+        setCart(prevCart => {
+          const existingIndex = prevCart.findIndex(item => item.id === product.id);
+          if (existingIndex > -1) {
+            const updated = [...prevCart];
+            updated[existingIndex].quantity += quantity;
+            return updated;
+          } else {
+            return [...prevCart, { ...product, quantity }];
+          }
+        });
+        setDetailQuantity(1);
+      };
+
+      const updateCartQuantity = (productId, delta) => {
+        setCart(prevCart => prevCart.map(item => {
+          if (item.id === productId) {
+            const newQty = item.quantity + delta;
+            return newQty > 0 ? { ...item, quantity: newQty } : null;
+          }
+          return item;
+        }).filter(Boolean));
+      };
+
+      const openProductDetail = (product) => {
+        setDetailProduct(product);
+        setDetailQuantity(1);
+      };
+
+      const handleSendWhatsAppOrder = (e) => {
+        if (e) e.preventDefault();
+        setFormError('');
+
+        if (!customerName.trim() || !customerPhone.trim()) {
+          setFormError("Por favor completa tu Nombre y Número de teléfono.");
+          return;
+        }
+        if (!locationDetails.trim()) {
+          setFormError("Por favor especifica la información de entrega (Dirección, Hora de recojo o N° de Mesa).");
+          return;
+        }
+
+        const newOrder = {
+          id: `ORD-${1000 + orders.length + 1}`,
+          date: new Date().toISOString(),
+          customerName,
+          customerPhone,
+          serviceType,
+          locationDetails,
+          paymentMethod,
+          status: "Pendiente",
+          total: cartSubtotal,
+          items: cart.map(i => ({ name: i.name, quantity: i.quantity, price: i.price }))
+        };
+
+        setOrders([newOrder, ...orders]);
+
+        let itemsText = cart.map(item => `• *${item.name}* x${item.quantity} = S/. ${(item.price * item.quantity).toFixed(2)}`).join('\n');
+        
+        let paymentDesc = paymentMethod === 'Efectivo_Contraentrega'
+          ? (serviceType === 'delivery' ? '💵 Efectivo Contraentrega (al recibir)' : serviceType === 'pickup' ? '💵 Efectivo Contraentrega (en local)' : '💵 Pago en efectivo en Mesa')
+          : paymentMethod;
+
+        let serviceLabel = serviceType === 'delivery' 
+          ? `🛵 *DELIVERY A DOMICILIO*\n📍 *Dirección:* ${locationDetails}`
+          : serviceType === 'pickup' 
+          ? `🛍️ *PARA RECOGER EN CHIFA*\n⏰ *Hora aprox:* ${locationDetails}`
+          : `🍽️ *ATENCIÓN EN MESA*\n🪑 *Mesa N°:* ${locationDetails}`;
+
+        let text = `🥢 *NUEVO PEDIDO - CHIFA MORALILLOS* 🥢\n\n` +
+          `🆔 *Pedido:* ${newOrder.id}\n` +
+          `👤 *Cliente:* ${customerName}\n` +
+          `📞 *Teléfono:* ${customerPhone}\n\n` +
+          `${serviceLabel}\n` +
+          `💳 *Método de Pago:* ${paymentDesc}\n\n` +
+          `📝 *PLATOS SOLICITADOS:*\n${itemsText}\n\n` +
+          `💰 *TOTAL A PAGAR: S/. ${cartSubtotal.toFixed(2)}*\n` +
+          (observations ? `💬 *Observaciones:* ${observations}\n\n` : '\n') +
+          `¡Gracias por preferir Chifa Moralillos! 🐉🔥`;
+
+        const encodedText = encodeURIComponent(text);
+        const whatsappUrl = `https://wa.me/${INITIAL_DATA.restaurantInfo.whatsapp}?text=${encodedText}`;
+        
+        window.open(whatsappUrl, '_blank');
+        setIsCheckoutOpen(false);
+        setCart([]);
+        setActiveTab('home');
+      };
+
+      const handleAdminLogin = (e) => {
+        e.preventDefault();
+        setLoginError('');
+        if (adminUser === 'admin' && adminPass === 'admin') {
+          setIsAdminLoggedIn(true);
+          setShowLoginModal(false);
+          setActiveTab('admin-dashboard');
+          setAdminUser('');
+          setAdminPass('');
+        } else {
+          setLoginError('Credenciales incorrectas. (Usar: admin / admin)');
+        }
+      };
+
+      const handleAdminLogout = () => {
+        setIsAdminLoggedIn(false);
+        setActiveTab('home');
+      };
+
+      const handleSaveProduct = (e) => {
+        e.preventDefault();
+        if (!productForm.name || !productForm.price) return;
+
+        if (editingProduct) {
+          setProducts(products.map(p => p.id === editingProduct.id ? {
+            ...p,
+            id: productForm.id || p.id,
+            name: productForm.name,
+            categoryId: productForm.categoryId,
+            price: parseFloat(productForm.price),
+            description: productForm.description,
+            image: productForm.image || p.image
+          } : p));
+        } else {
+          const newProd = {
+            id: productForm.id || `P_${Date.now()}`,
+            name: productForm.name,
+            categoryId: productForm.categoryId,
+            price: parseFloat(productForm.price),
+            description: productForm.description,
+            image: productForm.image || 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=800&q=80'
+          };
+          setProducts([...products, newProd]);
+        }
+
+        setShowProductModal(false);
+        setEditingProduct(null);
+        setProductForm({ id: '', name: '', categoryId: 'chaufa', price: '', description: '', image: '' });
+      };
+
+      const openEditProduct = (prod) => {
+        setEditingProduct(prod);
+        setProductForm({
+          id: prod.id,
+          name: prod.name,
+          categoryId: prod.categoryId,
+          price: prod.price.toString(),
+          description: prod.description,
+          image: prod.image
+        });
+        setShowProductModal(true);
+      };
+
+      const confirmDeleteProduct = () => {
+        if (productToDelete) {
+          setProducts(products.filter(p => p.id !== productToDelete.id));
+          setProductToDelete(null);
+        }
+      };
+
+      const filteredProducts = useMemo(() => {
+        return products.filter(p => {
+          const matchesCategory = selectedCategory ? p.categoryId === selectedCategory.id : true;
+          const matchesSearch = searchQuery ? (
+            p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.id.toLowerCase().includes(searchQuery.toLowerCase())
+          ) : true;
+          return matchesCategory && matchesSearch;
+        });
+      }, [products, selectedCategory, searchQuery]);
+
+      const filteredOrdersReport = useMemo(() => {
+        const now = new Date();
+        return orders.filter(order => {
+          const orderDate = new Date(order.date);
+          if (reportFilter === 'diario') return orderDate.toDateString() === now.toDateString();
+          if (reportFilter === 'semanal') return orderDate >= new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          if (reportFilter === 'mensual') return orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
+          return true;
+        });
+      }, [orders, reportFilter]);
+
+      const totalSalesAmount = useMemo(() => {
+        return filteredOrdersReport.filter(o => o.status !== 'Cancelado').reduce((acc, o) => acc + o.total, 0);
+      }, [filteredOrdersReport]);
+
+      return (
+        <div className="min-h-screen bg-[#141213] text-gray-100 flex flex-col md:flex-row font-sans selection:bg-amber-500 selection:text-black">
+
+          {/* SIDEBAR NAVEGACIÓN */}
+          <aside className={`
+            fixed md:static inset-y-0 left-0 z-40 w-64 bg-[#1e191b] border-r border-[#382d30] flex flex-col justify-between
+            transform transition-transform duration-300 ease-in-out
+            ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+          `}>
+            <div>
+              <div className="p-5 border-b border-[#382d30] flex items-center gap-3">
+                <ChifaLogo className="w-10 h-10 shrink-0" />
+                <div>
+                  <h1 className="font-extrabold text-lg text-amber-400 leading-tight">CHIFA MORALILLOS</h1>
+                  <span className="text-[10px] text-red-500 font-bold tracking-wider uppercase block">
+                    {isAdminLoggedIn ? 'PANEL ADMIN' : 'YURIMAGUAS'}
+                  </span>
+                </div>
+              </div>
+
+              <nav className="p-4 space-y-1">
+                {!activeTab.startsWith('admin') ? (
+                  <React.Fragment>
+                    <button
+                      onClick={() => { setActiveTab('home'); setSelectedCategory(null); setMobileMenuOpen(false); }}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                        activeTab === 'home' && selectedCategory === null 
+                        ? 'bg-gradient-to-r from-red-800 to-amber-700 text-white shadow-lg border-l-4 border-amber-400' 
+                        : 'text-gray-300 hover:bg-[#2e2628] hover:text-white'
+                    }`}
+                  >
+                    <Icon name="home" className="w-5 h-5 text-amber-400" />
+                    <span>Carta de Platos</span>
+                  </button>
+
+                  <button
+                    onClick={() => { setActiveTab('cart'); setMobileMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                      activeTab === 'cart' 
+                        ? 'bg-gradient-to-r from-red-800 to-amber-700 text-white shadow-lg border-l-4 border-amber-400' 
+                        : 'text-gray-300 hover:bg-[#2e2628] hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon name="shopping-bag" className="w-5 h-5 text-amber-400" />
+                      <span>Mi Pedido</span>
+                    </div>
+                    {totalCartCount > 0 && (
+                      <span className="bg-amber-500 text-black text-xs font-black px-2 py-0.5 rounded-full animate-pulse">
+                        {totalCartCount}
+                      </span>
+                    )}
+                  </button>
+
+                  <div className="pt-4 mt-4 border-t border-[#382d30] space-y-1">
+                    <a 
+                      href={INITIAL_DATA.restaurantInfo.socials.facebook} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold text-blue-400 hover:bg-[#2e2628] transition"
+                    >
+                      <Icon name="facebook" className="w-4 h-4" />
+                      <span>Facebook Oficial</span>
+                    </a>
+
+                    <a 
+                      href={`tel:${INITIAL_DATA.restaurantInfo.phone}`}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold text-emerald-400 hover:bg-[#2e2628] transition"
+                    >
+                      <Icon name="phone" className="w-4 h-4" />
+                      <span>Llamar al {INITIAL_DATA.restaurantInfo.phone}</span>
+                    </a>
+                  </div>
+                </React.Fragment>
+              ) : (
+                <div className="space-y-2">
+                  <div className="px-3 py-2 text-[10px] font-extrabold text-amber-400 uppercase tracking-widest">
+                    Gestión del Chifa
+                  </div>
+
+                  <button
+                    onClick={() => setActiveTab('admin-dashboard')}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition ${
+                      activeTab === 'admin-dashboard' ? 'bg-amber-500/20 text-amber-400 border-l-4 border-amber-400' : 'text-gray-300 hover:bg-[#2e2628]'
+                    }`}
+                  >
+                    <Icon name="bar-chart-3" className="w-5 h-5" />
+                    <span>Reportes / Ventas</span>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('admin-orders')}
+                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition ${
+                      activeTab === 'admin-orders' ? 'bg-amber-500/20 text-amber-400 border-l-4 border-amber-400' : 'text-gray-300 hover:bg-[#2e2628]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon name="list-ordered" className="w-5 h-5" />
+                      <span>Pedidos en Vivo</span>
+                    </div>
+                    <span className="bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                      {orders.filter(o => o.status === 'Pendiente').length}
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('admin-products')}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition ${
+                      activeTab === 'admin-products' ? 'bg-amber-500/20 text-amber-400 border-l-4 border-amber-400' : 'text-gray-300 hover:bg-[#2e2628]'
+                    }`}
+                  >
+                    <Icon name="package" className="w-5 h-5" />
+                    <span>Platos y Precios</span>
+                  </button>
+                </div>
+              )}
+            </nav>
+          </div>
+
+          <div className="p-4 border-t border-[#382d30]">
+            {!isAdminLoggedIn ? (
+              <button 
+                onClick={() => { setLoginError(''); setShowLoginModal(true); }}
+                className="w-full py-2.5 bg-[#292224] hover:bg-[#382e31] text-amber-400 font-bold text-xs rounded-xl border border-amber-500/30 transition flex items-center justify-center gap-2"
+              >
+                <Icon name="user-check" className="w-4 h-4" />
+                <span>Acceso Administrador</span>
+              </button>
+            ) : (
+              <button 
+                onClick={handleAdminLogout}
+                className="w-full py-2.5 bg-red-950/60 hover:bg-red-900 text-red-300 font-bold text-xs rounded-xl border border-red-800 transition flex items-center justify-center gap-2"
+              >
+                <Icon name="log-out" className="w-4 h-4" />
+                <span>Cerrar Sesión Admin</span>
+              </button>
+            )}
+          </div>
+        </aside>
+
+        {mobileMenuOpen && (
+          <div onClick={() => setMobileMenuOpen(false)} className="fixed inset-0 bg-black/80 z-30 md:hidden backdrop-blur-sm" />
+        )}
+
+        {/* CONTENIDO PRINCIPAL */}
+        <main className="flex-1 flex flex-col min-w-0 min-h-screen">
+
+          {/* HEADER MÓVIL */}
+          <header className="md:hidden bg-[#1e191b] p-4 flex items-center justify-between border-b border-[#382d30] sticky top-0 z-20">
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 bg-[#292224] rounded-lg text-gray-200">
+              <Icon name="menu" className="w-6 h-6" />
+            </button>
+            <div className="flex items-center gap-2">
+              <ChifaLogo className="w-7 h-7" />
+              <span className="font-extrabold text-sm text-amber-400 tracking-wider">CHIFA MORALILLOS</span>
+            </div>
+            <button onClick={() => setActiveTab('cart')} className="relative p-2 bg-[#292224] rounded-lg text-amber-400">
+              <Icon name="shopping-bag" className="w-5 h-5" />
+              {totalCartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-amber-500 text-black text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {totalCartCount}
+                </span>
+              )}
+            </button>
+          </header>
+
+          {/* VISTA CARTA PRINCIPAL */}
+          {activeTab === 'home' && (
+            <div className="flex-1 overflow-y-auto">
+              {/* HERO BANNER CON FONDO DE LOCAL MAS CLARO Y SIN CIRCULO DE IMAGEN */}
+              <div className="relative bg-black border-b border-red-900/40 p-6 md:p-14 overflow-hidden">
+                <div className="absolute inset-0 z-0">
+                  <img 
+                    src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80" 
+                    alt="Local Chifa Moralillos Yurimaguas" 
+                    className="w-full h-full object-cover opacity-55 filter brightness-100 scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#141213]/90 via-[#141213]/60 to-transparent" />
+                </div>
+
+                <div className="relative z-10 max-w-4xl mx-auto space-y-4 text-center md:text-left">
+                  <div className="inline-flex items-center gap-2 bg-amber-500/20 text-amber-300 text-xs px-3.5 py-1.5 rounded-full border border-amber-500/40 font-semibold shadow-md">
+                    <Icon name="flame" className="w-4 h-4 text-amber-400" />
+                    <span>Auténtica Sazón Oriental en Yurimaguas</span>
+                  </div>
+
+                  <h2 className="text-3xl md:text-5xl font-black text-amber-400 font-serif tracking-wide drop-shadow-lg">
+                    CHIFA MORALILLOS
+                  </h2>
+
+                  <p className="text-gray-100 text-sm md:text-base max-w-2xl font-medium leading-relaxed drop-shadow-md">
+                    Chaufas al wok, wantanes crujientes, banquetes familiares y platos ejecutivos. ¡Haz tu pedido directo para Delivery, Recoger o Atención en Mesa!
+                  </p>
+
+                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2 text-xs">
+                    <div className="flex items-center gap-1.5 bg-black/80 backdrop-blur px-3.5 py-2 rounded-xl border border-gray-700 text-gray-200 shadow-md">
+                      <Icon name="map-pin" className="w-4 h-4 text-red-500 shrink-0" />
+                      <span>{INITIAL_DATA.restaurantInfo.address}</span>
+                    </div>
+
+                    <a 
+                      href={`tel:${INITIAL_DATA.restaurantInfo.mobile}`} 
+                      className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-600 px-4 py-2 rounded-xl border border-emerald-500/60 text-white font-extrabold shadow-lg transition"
+                    >
+                      <Icon name="phone" className="w-4 h-4 text-white" />
+                      <span>Llamar: {INITIAL_DATA.restaurantInfo.mobile}</span>
+                    </a>
+
+                    <a 
+                      href={`https://wa.me/${INITIAL_DATA.restaurantInfo.whatsapp}?text=Hola%20Chifa%20Moralillos,%20deseo%20hacer%20una%20consulta`} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-xl border border-emerald-400/60 text-white font-extrabold shadow-lg transition"
+                    >
+                      <Icon name="whatsapp" className="w-4 h-4 text-white" />
+                      <span>WhatsApp Directo</span>
+                    </a>
+
+                    <a 
+                      href={INITIAL_DATA.restaurantInfo.socials.facebook} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-xl border border-blue-400/60 text-white font-extrabold shadow-lg transition"
+                    >
+                      <Icon name="facebook" className="w-4 h-4 text-white" />
+                      <span>Facebook Oficial</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* SECCIÓN CATEGORÍAS & BUSCADOR */}
+              <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-800 pb-4">
+                  <div>
+                    <h3 className="text-xl md:text-2xl font-black text-amber-400 uppercase tracking-wide">
+                      {selectedCategory ? selectedCategory.name : 'NUESTRA CARTA DE PLATOS'}
+                    </h3>
+                    <p className="text-xs text-gray-400">Selecciona una categoría o busca tu plato preferido</p>
+                  </div>
+
+                  <div className="relative w-full sm:w-72">
+                    <Icon name="search" className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      placeholder="Buscar chaufa, wantán, combo..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full bg-[#241f21] text-xs text-white pl-9 pr-4 py-2.5 rounded-xl border border-gray-800 focus:outline-none focus:border-amber-400"
+                    />
+                    {searchQuery && (
+                      <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <Icon name="x" className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {!selectedCategory && !searchQuery ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {INITIAL_DATA.categories.map((cat) => (
+                      <div 
+                        key={cat.id}
+                        onClick={() => setSelectedCategory(cat)}
+                        className="group cursor-pointer bg-[#1e191b] rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-400 transition-all duration-300 flex flex-col justify-between shadow-lg"
+                      >
+                        <div className="relative h-40 overflow-hidden">
+                          <img src={cat.image} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#1e191b] via-transparent to-transparent opacity-80" />
+                        </div>
+                        <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
+                          <div>
+                            <h4 className="font-bold text-white text-sm group-hover:text-amber-400 transition">{cat.name}</h4>
+                            <p className="text-gray-400 text-xs line-clamp-2 mt-1">{cat.description}</p>
+                          </div>
+                          <div className="flex items-center justify-between text-xs font-bold text-amber-400 pt-2">
+                            <span>Ver carta menú</span>
+                            <Icon name="chevron-right" className="w-4 h-4 group-hover:translate-x-1 transition" />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div>
+                    {selectedCategory && (
+                      <button 
+                        onClick={() => setSelectedCategory(null)}
+                        className="mb-6 inline-flex items-center gap-2 text-xs font-bold text-amber-400 bg-[#292224] px-4 py-2 rounded-xl border border-gray-700 hover:bg-[#382e31] transition"
+                      >
+                        ← Volver a todas las categorías
+                      </button>
+                    )}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                      {filteredProducts.map((product) => (
+                        <div key={product.id} className="bg-[#1e191b] rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-400/50 transition duration-300 flex flex-col justify-between shadow-lg">
+                          <div>
+                            <div onClick={() => openProductDetail(product)} className="relative h-44 cursor-pointer group overflow-hidden">
+                              <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                              <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-md px-3 py-1 rounded-full text-amber-400 font-extrabold text-xs border border-amber-400/40">
+                                S/{product.price.toFixed(2)}
+                              </div>
+                              <div className="absolute top-2 left-2 bg-red-600 font-mono font-bold text-white text-[10px] px-2 py-0.5 rounded">
+                                {product.id}
+                              </div>
+                            </div>
+
+                            <div className="p-4 space-y-2">
+                              <h4 onClick={() => openProductDetail(product)} className="font-bold text-white text-base hover:text-amber-400 cursor-pointer transition line-clamp-2">
+                                {product.name}
+                              </h4>
+                              <p className="text-gray-400 text-xs line-clamp-2 min-h-[32px]">{product.description}</p>
+                            </div>
+                          </div>
+
+                          <div className="p-4 pt-0">
+                            <button
+                              onClick={() => openProductDetail(product)}
+                              className="w-full bg-gradient-to-r from-red-700 to-amber-600 hover:from-red-600 hover:to-amber-500 text-white font-extrabold text-xs py-3 rounded-xl shadow-md transition"
+                            >
+                              Pedir este plato
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            </div>
+          )}
+
+          {/* VISTA CARRITO */}
+          {activeTab === 'cart' && (
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 max-w-4xl mx-auto w-full">
+              <h2 className="text-xl md:text-2xl font-black text-amber-400 mb-6 flex items-center gap-2.5 border-b border-gray-800 pb-4">
+                <div className="p-2 bg-amber-500/10 rounded-xl border border-amber-500/30">
+                  <Icon name="shopping-bag" className="w-5 h-5 text-amber-400" />
+                </div>
+                <span>Lista de Platos Solicitados</span>
+              </h2>
+
+              {cart.length === 0 ? (
+                <div className="bg-[#1e191b] rounded-2xl p-10 text-center border border-gray-800 space-y-4">
+                  <div className="w-16 h-16 bg-amber-500/10 rounded-2xl border border-amber-500/20 flex items-center justify-center mx-auto text-amber-400">
+                    <Icon name="shopping-bag" className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-base font-bold text-gray-200">Tu pedido está vacío</h3>
+                  <p className="text-gray-400 text-xs max-w-sm mx-auto">Selecciona tus chaufas y combos preferidos de la carta para agregarlos.</p>
+                  <button onClick={() => setActiveTab('home')} className="bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs px-6 py-3 rounded-xl transition">
+                    Explorar Menú de Platos
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-400 font-semibold">Puedes modificar cantidades o agregar más platos de la carta</span>
+                    <button onClick={() => setActiveTab('home')} className="text-xs font-bold text-amber-400 hover:underline flex items-center gap-1">
+                      <Icon name="plus" className="w-4 h-4" /> Agregar más productos
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {cart.map((item) => (
+                      <div key={item.id} className="bg-[#1e191b] rounded-2xl p-4 border border-gray-800 flex items-center justify-between gap-4 shadow-md">
+                        <div className="flex items-center gap-4">
+                          <img src={item.image} alt={item.name} className="w-16 h-16 rounded-xl object-cover" />
+                          <div>
+                            <span className="text-[10px] text-amber-400 font-mono font-bold">{item.id}</span>
+                            <h4 className="font-bold text-white text-sm">{item.name}</h4>
+                            <p className="text-xs text-gray-400 font-medium">Subtotal = S/{(item.price * item.quantity).toFixed(2)}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center bg-[#282224] rounded-xl border border-gray-700">
+                            <button onClick={() => updateCartQuantity(item.id, -1)} className="p-2 text-gray-300 hover:text-white">
+                              <Icon name="minus" className="w-3.5 h-3.5" />
+                            </button>
+                            <span className="px-3 text-xs font-bold text-white">{item.quantity}</span>
+                            <button onClick={() => updateCartQuantity(item.id, 1)} className="p-2 text-gray-300 hover:text-white">
+                              <Icon name="plus" className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                          <button onClick={() => updateCartQuantity(item.id, -item.quantity)} className="text-gray-500 hover:text-red-500 p-1">
+                            <Icon name="x" className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="bg-[#241a1c] rounded-2xl p-6 border border-amber-500/30 shadow-2xl space-y-4">
+                    <div className="flex items-center justify-between border-b border-gray-800 pb-4">
+                      <div>
+                        <span className="text-xs text-amber-400 font-bold uppercase tracking-widest">TOTAL ACUMULADO</span>
+                        <h3 className="text-3xl font-black text-amber-400">S/{cartSubtotal.toFixed(2)}</h3>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                      <button
+                        onClick={() => { setFormError(''); setIsCheckoutOpen(true); }}
+                        className="flex-1 bg-gradient-to-r from-red-700 to-amber-600 hover:from-red-600 hover:to-amber-500 text-white font-extrabold text-sm py-3 px-6 rounded-xl shadow-lg flex items-center justify-center gap-2 transition"
+                      >
+                        <Icon name="shopping-bag" className="w-4 h-4" />
+                        <span>Procesar y Pagar Pedido</span>
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('home')}
+                        className="bg-[#2e2628] hover:bg-[#382e31] text-gray-200 text-sm font-semibold py-3 px-6 rounded-xl border border-gray-700 flex items-center justify-center gap-1"
+                      >
+                        <Icon name="plus" className="w-4 h-4 text-amber-400" />
+                        <span>Añadir más platos</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* DASHBOARD ADMIN */}
+          {activeTab === 'admin-dashboard' && (
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-800 pb-4">
+                <div>
+                  <h2 className="text-2xl font-black text-amber-400 flex items-center gap-2">
+                    <Icon name="bar-chart-3" className="text-amber-400" />
+                    <span>Reporte General de Ventas</span>
+                  </h2>
+                  <p className="text-xs text-gray-400">Control de ingresos del Chifa Moralillos</p>
+                </div>
+
+                <div className="flex items-center gap-1 bg-[#1e191b] p-1 rounded-xl border border-gray-800 text-xs">
+                  {['diario', 'semanal', 'mensual', 'todo'].map((f) => (
+                    <button
+                      key={f}
+                      onClick={() => setReportFilter(f)}
+                      className={`px-3 py-1.5 rounded-lg font-bold capitalize transition ${
+                        reportFilter === f ? 'bg-amber-500 text-black' : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-[#1e191b] p-5 rounded-2xl border border-gray-800 space-y-1">
+                  <span className="text-xs text-gray-400">Ventas Totales ({reportFilter})</span>
+                  <h3 className="text-3xl font-black text-emerald-400">S/{totalSalesAmount.toFixed(2)}</h3>
+                </div>
+                <div className="bg-[#1e191b] p-5 rounded-2xl border border-gray-800 space-y-1">
+                  <span className="text-xs text-gray-400">Total Pedidos</span>
+                  <h3 className="text-3xl font-black text-white">{filteredOrdersReport.length}</h3>
+                </div>
+                <div className="bg-[#1e191b] p-5 rounded-2xl border border-gray-800 space-y-1">
+                  <span className="text-xs text-gray-400">Promedio Ticket</span>
+                  <h3 className="text-3xl font-black text-blue-400">
+                    S/{(filteredOrdersReport.length > 0 ? totalSalesAmount / filteredOrdersReport.length : 0).toFixed(2)}
+                  </h3>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* PEDIDOS EN VIVO ADMIN */}
+          {activeTab === 'admin-orders' && (
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+              <h2 className="text-2xl font-black text-amber-400 border-b border-gray-800 pb-4">
+                Pedidos en Vivo del Chifa
+              </h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {orders.map((ord) => (
+                  <div key={ord.id} className="bg-[#1e191b] rounded-2xl p-5 border border-gray-800 space-y-3">
+                    <div className="flex justify-between items-start border-b border-gray-800 pb-2">
+                      <div>
+                        <span className="text-xs font-mono font-bold text-amber-400">{ord.id}</span>
+                        <h4 className="font-bold text-white text-base">{ord.customerName}</h4>
+                        <p className="text-xs text-gray-400">📞 {ord.customerPhone}</p>
+                      </div>
+                      <span className="bg-amber-500/20 text-amber-300 border border-amber-400 text-[10px] font-bold px-2 py-0.5 rounded">
+                        {ord.status}
+                      </span>
+                    </div>
+
+                    <div className="text-xs text-gray-300 space-y-1">
+                      <p><strong className="text-gray-400">Tipo:</strong> {ord.serviceType}</p>
+                      <p><strong className="text-gray-400">Detalles:</strong> {ord.locationDetails}</p>
+                      <p><strong className="text-gray-400">Pago:</strong> {ord.paymentMethod}</p>
+                    </div>
+
+                    <div className="bg-[#282224] p-3 rounded-xl space-y-1 text-xs">
+                      {ord.items.map((it, idx) => (
+                        <div key={idx} className="flex justify-between text-gray-200">
+                          <span>{it.quantity}x {it.name}</span>
+                          <span>S/{(it.price * it.quantity).toFixed(2)}</span>
+                        </div>
+                      ))}
+                      <div className="border-t border-gray-700 pt-1 flex justify-between font-bold text-amber-400">
+                        <span>Total:</span>
+                        <span>S/{ord.total.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* PLATOS Y PRECIOS ADMIN */}
+          {activeTab === 'admin-products' && (
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+              <div className="flex justify-between items-center border-b border-gray-800 pb-4">
+                <h2 className="text-2xl font-black text-amber-400">Gestión de Platos y Precios</h2>
+                <button
+                  onClick={() => {
+                    setEditingProduct(null);
+                    setProductForm({ id: '', name: '', categoryId: 'chaufa', price: '', description: '', image: '' });
+                    setShowProductModal(true);
+                  }}
+                  className="bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs py-2.5 px-4 rounded-xl flex items-center gap-2"
+                >
+                  <Icon name="plus" className="w-4 h-4" />
+                  <span>Agregar Nuevo Plato</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {products.map((prod) => (
+                  <div key={prod.id} className="bg-[#1e191b] rounded-2xl overflow-hidden border border-gray-800 p-4 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <span className="font-mono font-bold text-amber-400 text-xs">{prod.id}</span>
+                      <span className="font-extrabold text-white text-sm">S/{prod.price.toFixed(2)}</span>
+                    </div>
+                    <h4 className="font-bold text-white text-sm">{prod.name}</h4>
+                    <div className="flex items-center gap-2 pt-2">
+                      <button onClick={() => openEditProduct(prod)} className="flex-1 bg-amber-500/20 text-amber-300 font-bold text-xs py-1.5 rounded-lg border border-amber-400 hover:bg-amber-500/30 transition">
+                        Editar
+                      </button>
+                      <button onClick={() => setProductToDelete(prod)} className="p-1.5 bg-red-950/60 text-red-400 rounded-lg border border-red-800 hover:bg-red-900 transition">
+                        <Icon name="trash-2" className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <footer className="bg-[#181516] border-t border-gray-900 py-4 px-6 text-center text-xs text-gray-500">
+            <p>© 2026 CHIFA MORALILLOS - Francisco Bardalez N° 701, Yurimaguas. Todos los derechos reservados.</p>
+          </footer>
+        </main>
+
+        {/* MODAL DETALLE DE PRODUCTO */}
+        {detailProduct && (
+          <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+            <div className="bg-[#181214] rounded-2xl w-full max-w-xl max-h-[94vh] flex flex-col overflow-hidden border border-red-900/40 shadow-2xl relative my-auto">
+              
+              <div className="p-3 bg-[#1e1719] border-b border-gray-800 flex items-center justify-between sticky top-0 z-20">
+                <span className="font-bold text-amber-400 text-xs tracking-wide uppercase mx-auto">
+                  {detailProduct.name}
+                </span>
+                <button onClick={() => setDetailProduct(null)} className="bg-[#292224] p-1.5 rounded-full text-gray-300 hover:text-white">
+                  <Icon name="x" className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="overflow-y-auto flex-1 space-y-4 p-4">
+                <div className="relative h-48 sm:h-56 rounded-xl overflow-hidden bg-black border border-gray-800">
+                  <img src={detailProduct.image} alt={detailProduct.name} className="w-full h-full object-cover" />
+                  <div className="absolute top-2 left-2 bg-red-600 text-white font-mono text-[11px] px-2 py-0.5 rounded font-bold">
+                    {detailProduct.id}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-extrabold text-white">{detailProduct.name}</h3>
+                  <p className="text-amber-400 font-black text-xl mt-0.5">S/{detailProduct.price.toFixed(2)}</p>
+                  <p className="text-gray-400 text-xs mt-1 leading-relaxed">{detailProduct.description}</p>
+                </div>
+
+                <div className="space-y-2 pt-1">
+                  <div className="grid grid-cols-2 gap-2">
+                    <button 
+                      onClick={() => setDetailQuantity(Math.max(1, detailQuantity - 1))} 
+                      className="bg-[#262022] hover:bg-[#342a2d] border border-gray-700 text-white font-bold py-2.5 rounded-xl flex items-center justify-center transition"
+                    >
+                      <Icon name="minus" className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={() => setDetailQuantity(detailQuantity + 1)} 
+                      className="bg-red-600 hover:bg-red-500 text-white font-black py-2.5 rounded-xl flex items-center justify-center transition"
+                    >
+                      <Icon name="plus" className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      handleAddToCart(detailProduct, detailQuantity);
+                    }}
+                    className="w-full bg-red-600 hover:bg-red-500 text-white font-extrabold text-sm py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition"
+                  >
+                    <Icon name="shopping-bag" className="w-4 h-4" />
+                    <span>Añadir al carrito</span>
+                  </button>
+                </div>
+
+                {/* PLATOS ACUMULADOS */}
+                <div className="bg-[#241719] rounded-xl p-4 border border-red-950/60 space-y-3">
+                  <div className="flex items-center justify-between border-b border-red-900/30 pb-2">
+                    <div className="flex items-center gap-2">
+                      <Icon name="shopping-bag" className="w-4 h-4 text-amber-400" />
+                      <h4 className="font-black text-amber-400 text-xs tracking-wider uppercase">
+                        PLATOS ACUMULADOS EN TU ORDEN ({totalCartCount})
+                      </h4>
+                    </div>
+                  </div>
+
+                  {cart.length === 0 ? (
+                    <p className="text-gray-400 text-xs italic py-1">Aún no has añadido ningún producto a este pedido.</p>
+                  ) : (
+                    <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+                      {cart.map((item) => (
+                        <div key={item.id} className="flex items-center justify-between bg-[#1a1214] p-2.5 rounded-lg border border-gray-800 text-xs">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <img src={item.image} alt={item.name} className="w-9 h-9 rounded-md object-cover shrink-0" />
+                            <div className="truncate">
+                              <h5 className="font-bold text-white truncate">{item.name}</h5>
+                              <span className="text-amber-400 text-[11px]">S/{(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            <div className="flex items-center bg-[#292023] rounded border border-gray-700 text-xs">
+                              <button onClick={() => updateCartQuantity(item.id, -1)} className="px-1.5 py-0.5 text-gray-300 hover:text-white">-</button>
+                              <span className="px-2 font-bold text-white">{item.quantity}</span>
+                              <button onClick={() => updateCartQuantity(item.id, 1)} className="px-1.5 py-0.5 text-gray-300 hover:text-white">+</button>
+                            </div>
+                            <button onClick={() => updateCartQuantity(item.id, -item.quantity)} className="text-gray-500 hover:text-red-400 p-0.5">
+                              <Icon name="x" className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* TOTAL ACUMULADO */}
+                <div className="bg-[#2b1619] p-4 rounded-xl border border-red-800/60 flex items-center justify-between gap-3 shadow-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0">
+                      <Icon name="flame" className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-300 text-xs">Total Acumulado</h4>
+                      <span className="text-amber-400 font-extrabold text-lg">S/{cartSubtotal.toFixed(2)}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setDetailProduct(null);
+                      setActiveTab('cart');
+                    }}
+                    className="bg-red-600 hover:bg-red-500 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-md flex items-center gap-2 shrink-0 transition"
+                  >
+                    <Icon name="shopping-bag" className="w-4 h-4" />
+                    <span>Realizar Pedido</span>
+                  </button>
+                </div>
+
+                {/* CATEGORÍAS PARA SEGUIR COMPRANDO */}
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between px-1">
+                    <h4 className="font-extrabold text-amber-400 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                      <span>Explorar otras categorías</span> 🥢
+                    </h4>
+                    <span className="text-[10px] text-gray-400 font-medium">Desliza →</span>
+                  </div>
+
+                  <div className="flex gap-2.5 overflow-x-auto pb-2 pt-1 no-scrollbar">
+                    {INITIAL_DATA.categories.map((cat) => (
+                      <div
+                        key={cat.id}
+                        onClick={() => {
+                          setSelectedCategory(cat);
+                          setDetailProduct(null);
+                        }}
+                        className="shrink-0 w-32 bg-[#21191b] rounded-xl overflow-hidden border border-gray-800 hover:border-amber-400 cursor-pointer transition group shadow-md"
+                      >
+                        <div className="h-16 overflow-hidden relative">
+                          <img src={cat.image} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition duration-300" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#21191b] via-transparent opacity-60" />
+                        </div>
+                        <div className="p-2 bg-[#1b1416]">
+                          <span className="font-bold text-[10px] text-gray-200 uppercase group-hover:text-amber-400 line-clamp-1">
+                            {cat.name}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL CHECKOUT */}
+        {isCheckoutOpen && (
+          <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+            <div className="bg-[#181516] rounded-2xl w-full max-w-md overflow-hidden border border-gray-800 shadow-2xl relative my-auto">
+              <div className="p-4 bg-[#20191b] border-b border-gray-800 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ChifaLogo className="w-6 h-6" />
+                  <h3 className="font-extrabold text-amber-400 text-sm">Procesar Orden - Chifa Moralillos</h3>
+                </div>
+                <button onClick={() => setIsCheckoutOpen(false)} className="text-gray-400 hover:text-white">
+                  <Icon name="x" className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSendWhatsAppOrder} className="p-5 space-y-4 text-xs">
+
+                {formError && (
+                  <div className="bg-red-950/80 border border-red-700 text-red-300 p-3 rounded-xl text-xs flex items-center gap-2">
+                    <Icon name="alert-triangle" className="w-4 h-4 shrink-0" />
+                    <span>{formError}</span>
+                  </div>
+                )}
+
+                {/* SELECCIÓN TIPO DE SERVICIO */}
+                <div>
+                  <label className="block text-gray-300 font-bold mb-2">¿Cómo deseas tu pedido?</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { id: 'delivery', label: 'Delivery', icon: 'bike' },
+                      { id: 'pickup', label: 'Recoger', icon: 'store' },
+                      { id: 'dinein', label: 'Mesa Local', icon: 'armchair' }
+                    ].map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => setServiceType(s.id)}
+                        className={`p-2.5 rounded-xl font-bold border text-center transition flex flex-col items-center justify-center gap-1 ${
+                          serviceType === s.id ? 'bg-amber-500/20 border-amber-400 text-amber-300' : 'bg-[#241f21] border-gray-800 text-gray-400'
+                        }`}
+                      >
+                        <Icon name={s.icon} className="w-4 h-4" />
+                        <span>{s.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* CAMPO DE UBICACIÓN */}
+                <div>
+                  <label className="block text-gray-300 font-bold mb-1">
+                    {serviceType === 'delivery' && '📍 Dirección Exacta en Yurimaguas'}
+                    {serviceType === 'pickup' && '⏰ Hora estimada de recojo'}
+                    {serviceType === 'dinein' && '🪑 Número de Mesa en el Chifa'}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder={
+                      serviceType === 'delivery' ? "Ej: Calle Comercio N° 420" :
+                      serviceType === 'pickup' ? "Ej: En 20 minutos (7:30 pm)" : "Ej: Mesa N° 05"
+                    }
+                    value={locationDetails}
+                    onChange={(e) => setLocationDetails(e.target.value)}
+                    className="w-full bg-[#241f21] text-white p-3 rounded-xl border border-gray-800 focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+
+                {/* MÉTODOS DE PAGO */}
+                <div>
+                  <label className="block text-gray-300 font-bold mb-2">Método de Pago:</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { 
+                        id: 'Efectivo_Contraentrega', 
+                        label: serviceType === 'delivery' 
+                          ? '💵 Contraentrega al recibir' 
+                          : serviceType === 'pickup' 
+                          ? '💵 Contraentrega al recoger' 
+                          : '💵 Pago en efectivo en Mesa' 
+                      },
+                      { id: 'Yape', label: '🟣 Yape' },
+                      { id: 'Plin', label: '🔵 Plin' }
+                    ].map((m) => (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => setPaymentMethod(m.id)}
+                        className={`p-2.5 rounded-xl font-bold border text-left transition flex items-center justify-between text-[11px] ${
+                          paymentMethod === m.id ? 'bg-amber-500/20 border-amber-400 text-amber-300' : 'bg-[#241f21] border-gray-800 text-gray-400'
+                        }`}
+                      >
+                        <span className="truncate">{m.label}</span>
+                        {paymentMethod === m.id && <Icon name="check" className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
+                      </button>
+                    ))}
+                  </div>
+
+                  {paymentMethod === 'Efectivo_Contraentrega' && (
+                    <div className="mt-3 p-3 bg-emerald-950/40 rounded-xl border border-emerald-500/30 text-[11px] space-y-1">
+                      <p className="text-emerald-300 font-extrabold flex items-center gap-1.5">
+                        💵 Pago en Efectivo Confirmado
+                      </p>
+                      <p className="text-gray-300">
+                        {serviceType === 'delivery' && 'Pagas en efectivo directamente al repartidor al recibir el pedido.'}
+                        {serviceType === 'pickup' && 'Pagas en caja en la Calle Francisco Bardalez N° 701 al momento de recoger tus platos.'}
+                        {serviceType === 'dinein' && 'Pagas en efectivo directamente en tu mesa o en caja al terminar de consumir.'}
+                      </p>
+                    </div>
+                  )}
+
+                  {(paymentMethod === 'Yape' || paymentMethod === 'Plin') && (
+                    <div className="mt-3 p-3.5 bg-purple-950/40 rounded-xl border border-purple-500/30 text-[11px] space-y-3">
+                      <div className="flex items-center justify-between gap-3 border-b border-purple-800/40 pb-3">
+                        <div className="space-y-1">
+                          <p className="text-purple-300 font-black text-xs flex items-center gap-1.5">
+                            <Icon name="qr-code" className="w-4 h-4 text-purple-400" />
+                            <span>{paymentMethod === 'Yape' ? '🟣 Pago por Yape' : '🔵 Pago por Plin'}</span>
+                          </p>
+                          <p className="text-white font-bold">Titular: <span className="text-amber-400">{INITIAL_DATA.restaurantInfo.paymentHolder}</span></p>
+                          <p className="text-gray-300 font-mono text-xs">Número: <strong className="text-white">{INITIAL_DATA.restaurantInfo.paymentNumber}</strong></p>
+                        </div>
+
+                        <div className="w-20 h-20 bg-white p-1 rounded-xl shadow-md flex items-center justify-center shrink-0 border-2 border-purple-400 overflow-hidden">
+                          <img 
+                            src={paymentMethod === 'Yape' 
+                              ? "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=941428121-YAPE-CHIFA-MORALILLOS" 
+                              : "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=941428121-PLIN-CHIFA-MORALILLOS"
+                            } 
+                            alt="QR de Pago" 
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                      </div>
+
+                      <p className="text-gray-300 text-[10px] leading-relaxed">
+                        Escanea el código QR o transfiere al <strong>941 428 121</strong> (Chifa Moralillos).
+                      </p>
+
+                      <div className="space-y-2.5 pt-1">
+                        <div>
+                          <label className="block text-purple-200 font-semibold mb-1">Número de Operación / Voucher:</label>
+                          <input
+                            type="text"
+                            placeholder="Ej: 482910 o N° de operación"
+                            value={operationNumber}
+                            onChange={(e) => setOperationNumber(e.target.value)}
+                            className="w-full bg-[#1b1218] text-white p-2.5 rounded-lg border border-purple-800/60 focus:outline-none focus:border-purple-400 font-mono"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-purple-200 font-semibold mb-1">Adjuntar Captura de Pago:</label>
+                          <div className="relative border border-dashed border-purple-700 hover:border-purple-400 rounded-lg p-2.5 text-center bg-[#1b1218] cursor-pointer">
+                            <input 
+                              type="file" 
+                              accept="image/*"
+                              onChange={(e) => setProofFile(e.target.files ? e.target.files[0] : null)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            />
+                            <div className="flex items-center justify-center gap-2 text-gray-300 text-[11px]">
+                              <Icon name="upload" className="w-4 h-4 text-purple-400" />
+                              <span className="truncate">{proofFile ? proofFile.name : 'Subir foto o captura del voucher'}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 font-semibold mb-1">Nombre Completo</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ej: Juan Pérez"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    className="w-full bg-[#241f21] text-white p-3 rounded-xl border border-gray-800 focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 font-semibold mb-1">Número de Teléfono</label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="Ej: 941428121"
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    className="w-full bg-[#241f21] text-white p-3 rounded-xl border border-gray-800 focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 font-semibold mb-1">Observaciones / Indicaciones</label>
+                  <textarea
+                    rows="2"
+                    placeholder="Ej: Sin cebollita china, chaufa bien salteado..."
+                    value={observations}
+                    onChange={(e) => setObservations(e.target.value)}
+                    className="w-full bg-[#241f21] text-white p-3 rounded-xl border border-gray-800 focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+
+                <div className="space-y-2 pt-2">
+                  <button
+                    type="submit"
+                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-lg transition text-xs"
+                  >
+                    <Icon name="message-circle" className="w-4 h-4" />
+                    <span>Realizar Pedido mediante WhatsApp</span>
+                  </button>
+
+                  <div className="flex gap-2">
+                    <a
+                      href={`tel:${INITIAL_DATA.restaurantInfo.mobile}`}
+                      className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-3 rounded-xl flex items-center justify-center gap-2 shadow transition text-xs"
+                    >
+                      <Icon name="phone" className="w-4 h-4" />
+                      <span>Llamada Directa</span>
+                    </a>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsCheckoutOpen(false)}
+                      className="bg-[#252022] hover:bg-[#312a2c] text-gray-300 font-semibold px-4 py-3 rounded-xl border border-gray-700 transition"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL ADMIN LOGIN */}
+        {showLoginModal && (
+          <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-[#181516] rounded-2xl w-full max-w-sm border border-gray-800 p-6 space-y-4 shadow-2xl relative">
+              <button onClick={() => setShowLoginModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <Icon name="x" className="w-5 h-5" />
+              </button>
+
+              <div className="text-center space-y-1">
+                <div className="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/40">
+                  <Icon name="user-check" className="w-6 h-6" />
+                </div>
+                <h3 className="font-bold text-white text-lg">Panel de Administración</h3>
+                <p className="text-xs text-gray-400">Control de platos, precios y ordenes del Chifa</p>
+              </div>
+
+              {loginError && (
+                <div className="bg-red-950/80 border border-red-800 text-red-300 p-2.5 rounded-xl text-xs text-center font-semibold">
+                  {loginError}
+                </div>
+              )}
+
+              <form onSubmit={handleAdminLogin} className="space-y-3 text-xs">
+                <div>
+                  <label className="block text-gray-300 font-semibold mb-1">Usuario</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="admin"
+                    value={adminUser}
+                    onChange={(e) => setAdminUser(e.target.value)}
+                    className="w-full bg-[#241f21] text-white p-3 rounded-xl border border-gray-800 focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 font-semibold mb-1">Contraseña</label>
+                  <input
+                    type="password"
+                    required
+                    placeholder="admin"
+                    value={adminPass}
+                    onChange={(e) => setAdminPass(e.target.value)}
+                    className="w-full bg-[#241f21] text-white p-3 rounded-xl border border-gray-800 focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+
+                <div className="bg-amber-950/40 p-2.5 rounded-xl border border-amber-900/40 text-[10px] text-amber-300 text-center">
+                  🔑 Credenciales por defecto: <strong>admin</strong> / <strong>admin</strong>
+                </div>
+
+                <button type="submit" className="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-3 rounded-xl shadow-lg transition">
+                  Acceder al Dashboard
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL AGREGAR/EDITAR PRODUCTO */}
+        {showProductModal && (
+          <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-[#181516] rounded-2xl w-full max-w-md border border-gray-800 p-6 space-y-4 shadow-2xl relative">
+              <button onClick={() => setShowProductModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <Icon name="x" className="w-5 h-5" />
+              </button>
+
+              <h3 className="font-bold text-white text-lg border-b border-gray-800 pb-2">
+                {editingProduct ? 'Editar Plato o Combo' : 'Nuevo Plato para el Menú'}
+              </h3>
+
+              <form onSubmit={handleSaveProduct} className="space-y-3 text-xs">
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="block text-gray-300 font-semibold mb-1">Código</label>
+                    <input
+                      type="text"
+                      placeholder="Ej: G1"
+                      value={productForm.id}
+                      onChange={(e) => setProductForm({ ...productForm, id: e.target.value })}
+                      className="w-full bg-[#241f21] text-white p-3 rounded-xl border border-gray-800"
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-gray-300 font-semibold mb-1">Nombre del Plato</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Ej: Chaufa Especial"
+                      value={productForm.name}
+                      onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                      className="w-full bg-[#241f21] text-white p-3 rounded-xl border border-gray-800"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-gray-300 font-semibold mb-1">Categoría</label>
+                    <select
+                      value={productForm.categoryId}
+                      onChange={(e) => setProductForm({ ...productForm, categoryId: e.target.value })}
+                      className="w-full bg-[#241f21] text-white p-3 rounded-xl border border-gray-800"
+                    >
+                      {INITIAL_DATA.categories.map((c) => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-300 font-semibold mb-1">Precio (S/.)</label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      required
+                      placeholder="23.00"
+                      value={productForm.price}
+                      onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                      className="w-full bg-[#241f21] text-white p-3 rounded-xl border border-gray-800"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 font-semibold mb-1">Descripción / Ingredientes</label>
+                  <textarea
+                    rows="2"
+                    placeholder="Arroz chaufa con pollo, chancho y langostinos"
+                    value={productForm.description}
+                    onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                    className="w-full bg-[#241f21] text-white p-3 rounded-xl border border-gray-800"
+                  />
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <button type="submit" className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-3 rounded-xl shadow-lg transition">
+                    Guardar Plato
+                  </button>
+                  <button type="button" onClick={() => setShowProductModal(false)} className="bg-[#252022] hover:bg-[#312a2c] text-gray-300 font-semibold px-4 py-3 rounded-xl transition">
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL CONFIRMACIÓN ELIMINAR */}
+        {productToDelete && (
+          <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-[#181516] rounded-2xl w-full max-w-sm border border-gray-800 p-6 space-y-4 shadow-2xl relative">
+              <div className="flex flex-col items-center text-center space-y-2">
+                <div className="w-12 h-12 rounded-full bg-red-950/80 text-red-400 border border-red-800 flex items-center justify-center">
+                  <Icon name="alert-triangle" className="w-6 h-6" />
+                </div>
+                <h3 className="font-extrabold text-white text-lg">¿Eliminar este plato?</h3>
+                <p className="text-xs text-gray-400">
+                  Se eliminará <span className="text-amber-400 font-bold">"{productToDelete.name}"</span> de la carta.
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={confirmDeleteProduct}
+                  className="flex-1 bg-red-600 hover:bg-red-500 text-white font-extrabold text-xs py-3 rounded-xl shadow-lg transition"
+                >
+                  Sí, Eliminar
+                </button>
+                <button
+                  onClick={() => setProductToDelete(null)}
+                  className="flex-1 bg-[#252022] hover:bg-[#312a2c] text-gray-300 font-bold text-xs py-3 rounded-xl border border-gray-700 transition"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+      </div>
+    );
+  }
+
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(<App />);
+  </script>
+</body>
+</html>
