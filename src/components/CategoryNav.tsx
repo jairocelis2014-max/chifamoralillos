@@ -127,8 +127,8 @@ export const CategoryNav: React.FC<CategoryNavProps> = ({
 
                 {/* Top Badge */}
                 <div className="relative z-10 flex items-center justify-between">
-                  <span className="text-[9px] font-mono font-black text-white bg-black/60 px-1.5 py-0.5 rounded border border-white/20">
-                    SECC {sec.number}
+                  <span className="text-[9px] font-mono font-black text-amber-300 bg-black/75 px-1.5 py-0.5 rounded border border-amber-500/30">
+                    CARTA {sec.number}
                   </span>
                   {sec.badge && (
                     <span className="text-[9px] font-black text-white bg-red-700 px-1.5 py-0.5 rounded shadow">

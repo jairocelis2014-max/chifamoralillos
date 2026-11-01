@@ -838,7 +838,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 }`}
               >
                 <Layers className="w-4 h-4 shrink-0" />
-                <span className="whitespace-nowrap font-bold">Gestión de Secciones ({sections.length})</span>
+                <span className="whitespace-nowrap font-bold">Gestión de Cartas ({sections.length})</span>
               </button>
 
               {/* Tab 5: Configuración del Chifa */}

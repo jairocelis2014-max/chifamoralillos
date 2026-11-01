@@ -392,7 +392,7 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
                   
                   <span className="relative z-10 text-[9px] font-mono font-black text-amber-300 bg-black/75 px-1.5 py-0.5 rounded border border-amber-500/30 self-start">
-                    SECC {c.number}
+                    CARTA {c.number}
                   </span>
 
                   <span className="relative z-10 text-xs font-black text-white group-hover:text-amber-300 leading-tight drop-shadow">

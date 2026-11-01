@@ -45,14 +45,31 @@ export const Hero: React.FC<HeroProps> = ({
               <span>Auténtica Sazón Oriental en Yurimaguas • Fuego al Wok</span>
             </div>
 
-            {/* Title & Slogan */}
-            <div className="space-y-1.5">
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-yellow-500 font-serif tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
-                BIENVENIDO AL CHIFA MORALILLOS
-              </h1>
-              <p className="text-amber-400 font-extrabold text-base sm:text-xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] tracking-wide">
-                ¡Auténtica Comida China & Sabor Peruanazo!
-              </p>
+            {/* Title & Slogan with Elegant Chinese Luxury Typography */}
+            <div className="space-y-2 relative">
+              {/* Subtle ambient golden aura for maximum elegance and legibility */}
+              <div className="absolute -inset-x-4 -inset-y-3 bg-gradient-to-r from-amber-500/10 via-red-950/40 to-transparent blur-xl pointer-events-none rounded-3xl" />
+              
+              <div className="relative">
+                <span className="block text-xs sm:text-sm font-bold tracking-[0.25em] text-amber-300/90 uppercase mb-1 font-['Cinzel',serif] drop-shadow-md">
+                  Tradición & Sazón en Yurimaguas
+                </span>
+                
+                <h1 className="text-3xl sm:text-5xl lg:text-[3.5rem] font-black tracking-normal leading-[1.1] font-['Cinzel_Decorative',serif] text-transparent bg-clip-text bg-gradient-to-b from-amber-50 via-amber-300 to-amber-600 drop-shadow-[0_4px_20px_rgba(245,158,11,0.55)]">
+                  BIENVENIDO A CHIFA MORALILLOS
+                </h1>
+
+                {/* Elegant decorative golden line */}
+                <div className="flex items-center justify-center lg:justify-start gap-3 my-2.5">
+                  <div className="h-[2px] w-12 sm:w-20 bg-gradient-to-r from-transparent via-amber-400 to-amber-500 rounded-full" />
+                  <span className="text-amber-400 text-xs sm:text-sm font-serif">❖</span>
+                  <div className="h-[2px] w-20 sm:w-36 bg-gradient-to-r from-amber-500 via-amber-400 to-transparent rounded-full" />
+                </div>
+
+                <p className="font-['Playfair_Display',serif] italic text-amber-300 font-bold text-base sm:text-xl drop-shadow-[0_2px_10px_rgba(0,0,0,1)] tracking-wide">
+                  ¡Auténtica Comida China & Sabor Peruanazo!
+                </p>
+              </div>
             </div>
 
             <p className="text-gray-100 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto lg:mx-0 font-medium drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] bg-black/30 backdrop-blur-xs p-2 rounded-xl">

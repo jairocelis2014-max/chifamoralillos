@@ -524,7 +524,7 @@ export default function App() {
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-8 w-full space-y-8">
         
-        {/* SECCIONES HEADER + BUSCADOR DE PLATOS COLOCADO A LA DERECHA */}
+        {/* CARTAS HEADER + BUSCADOR DE PLATOS COLOCADO A LA DERECHA */}
         <section id="menu-section" className="scroll-mt-24 space-y-4">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-gray-800/80 pb-3">
             <div>
@@ -532,18 +532,18 @@ export default function App() {
                 <Flame className="w-5 h-5 text-orange-500 shrink-0" />
                 <h3 className="text-base sm:text-lg font-black text-amber-400 uppercase tracking-wider">
                   {selectedSection === null
-                    ? `Las ${sections.length} Secciones Oficiales del Menú Chifa Moralillos`
-                    : sections.find((s) => s.number === selectedSection)?.title || 'Sección del Menú'}
+                    ? `Las ${sections.length} Cartas Oficiales del Menú Chifa Moralillos`
+                    : sections.find((s) => s.number === selectedSection)?.title || 'Carta del Menú'}
                 </h3>
               </div>
               <p className="text-xs text-gray-400 mt-0.5">
                 {selectedSection === null
-                  ? `Selecciona cualquiera de las ${sections.length} categorías con foto de fondo para ver sus platos ordenaditos`
-                  : `Mostrando platos de esta sección • ${filteredProducts.length} disponibles`}
+                  ? `Selecciona cualquiera de las ${sections.length} cartas con foto de fondo para ver sus platos ordenaditos`
+                  : `Mostrando platos de esta carta • ${filteredProducts.length} disponibles`}
               </p>
             </div>
 
-            {/* Buscador de Plato colocado a la derecha de las Secciones */}
+            {/* Buscador de Plato colocado a la derecha de las Cartas */}
             <div className="flex items-center gap-2 w-full md:w-auto">
               {selectedSection !== null && (
                 <button
@@ -553,7 +553,7 @@ export default function App() {
                   }}
                   className="px-3.5 py-2.5 rounded-xl bg-[#23171b] hover:bg-[#342228] text-amber-300 text-xs font-bold border border-amber-500/30 whitespace-nowrap transition active:scale-95 shadow"
                 >
-                  ← Ver Todas las Secciones
+                  ← Ver Todas las Cartas
                 </button>
               )}
 
@@ -630,10 +630,10 @@ export default function App() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30 pointer-events-none" />
                   <div className="absolute inset-0 bg-gradient-to-r from-red-950/40 to-transparent pointer-events-none" />
 
-                  {/* Encabezado con número de sección y badge */}
+                  {/* Encabezado con CARTA {number} y badge */}
                   <div className="relative z-10 flex items-center justify-between">
                     <span className="font-mono text-xs font-black text-amber-300 bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-lg border border-amber-500/40 shadow-sm">
-                      SECCIÓN {sec.number}
+                      CARTA {sec.number}
                     </span>
                     {sec.badge && (
                       <span className="bg-gradient-to-r from-red-700 to-amber-600 text-white font-mono text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-lg border border-amber-400/30">
@@ -698,7 +698,7 @@ export default function App() {
                 }}
                 className="text-xs text-amber-400 hover:underline font-bold"
               >
-                ← Ver todas las {sections.length} secciones
+                ← Ver todas las {sections.length} cartas
               </button>
             )}
           </div>
@@ -710,7 +710,7 @@ export default function App() {
               </div>
               <h4 className="text-base font-bold text-white">No encontramos platos con ese criterio</h4>
               <p className="text-xs text-gray-400 max-w-sm mx-auto">
-                Prueba buscando por otro código o haz clic en "Ver todas las secciones".
+                Prueba buscando por otro código o haz clic en "Ver todas las cartas".
               </p>
               <button
                 onClick={() => {
