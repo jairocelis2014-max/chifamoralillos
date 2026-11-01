@@ -17,6 +17,51 @@ import { ShoppingBag, MessageCircle, Phone, Facebook, ArrowUp, Flame, Star, Spar
 
 const INITIAL_DEMO_ORDERS: Order[] = [
   {
+    id: "MORALILLO-1864",
+    createdAt: new Date().toISOString(),
+    customerName: "Jackelyn",
+    customerPhone: "907373993",
+    serviceType: "delivery",
+    addressOrTable: "Raymondi",
+    paymentMethod: "Yape",
+    paymentVoucher: "11111",
+    notes: "Cubiertos descartables",
+    items: [
+      {
+        id: "G1-chaufa-esp",
+        productId: "G1",
+        code: "G1",
+        name: "G1 Chaufa especial",
+        price: 23.00,
+        quantity: 1,
+        notes: "Cubiertos descartables",
+        image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: "G10-aero-pollo",
+        productId: "G10",
+        code: "G10",
+        name: "G10 Aeropuerto pollo",
+        price: 22.00,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: "GAS-IK-296",
+        productId: "GAS-IK-296",
+        code: "GAS-IK-296",
+        name: "Inca kola 296 ml.",
+        price: 2.50,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80"
+      }
+    ],
+    subtotal: 47.50,
+    deliveryFee: 0,
+    total: 47.50,
+    status: "Pendiente"
+  },
+  {
     id: "MORALILLO-1001",
     createdAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
     customerName: "Carlos Celis",
@@ -70,12 +115,47 @@ export default function App() {
   const [orders, setOrders] = useState<Order[]>(() => {
     try {
       const saved = localStorage.getItem('chifa_orders_v3');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Guarantee Jackelyn's order MORALILLO-1864 is included
+          if (!parsed.some((o: Order) => o.id === "MORALILLO-1864")) {
+            parsed.unshift(INITIAL_DEMO_ORDERS[0]);
+          }
+          return parsed;
+        }
+      }
     } catch (e) {
       console.error(e);
     }
     return INITIAL_DEMO_ORDERS;
   });
+
+  // Server sync state
+  const [isServerConnected, setIsServerConnected] = useState(true);
+  const [lastSyncTime, setLastSyncTime] = useState<Date>(new Date());
+
+  const fetchServerOrders = async () => {
+    try {
+      const res = await fetch('/api/orders');
+      if (res.ok) {
+        const serverOrders = await res.json();
+        if (Array.isArray(serverOrders) && serverOrders.length > 0) {
+          setOrders(serverOrders);
+          setIsServerConnected(true);
+          setLastSyncTime(new Date());
+        }
+      }
+    } catch (err) {
+      console.warn('Backend server poll check:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchServerOrders();
+    const interval = setInterval(fetchServerOrders, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Admin login state
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
@@ -280,12 +360,22 @@ export default function App() {
     setCart([]);
   };
 
-  // Order Placement
-  const handleOrderCompleted = (newOrder: Order) => {
-    setOrders((prev) => [newOrder, ...prev]);
+  // Order Placement (Sync to local and server)
+  const handleOrderCompleted = async (newOrder: Order) => {
+    setOrders((prev) => [newOrder, ...prev.filter((o) => o.id !== newOrder.id)]);
     setCart([]);
     setIsCheckoutOpen(false);
     setRecentOrderSuccess(newOrder);
+
+    try {
+      await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newOrder),
+      });
+    } catch (e) {
+      console.warn('Error saving order to backend server:', e);
+    }
   };
 
   // Admin Handlers
@@ -303,10 +393,43 @@ export default function App() {
     localStorage.removeItem('chifa_admin_logged');
   };
 
-  const handleUpdateOrderStatus = (orderId: string, status: Order['status']) => {
+  const handleUpdateOrderStatus = async (orderId: string, status: Order['status']) => {
     setOrders((prev) =>
       prev.map((o) => (o.id === orderId ? { ...o, status } : o))
     );
+    try {
+      await fetch(`/api/orders/${orderId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+    } catch (e) {
+      console.warn('Error updating status on server:', e);
+    }
+  };
+
+  const handleDeleteOrder = async (orderId: string) => {
+    setOrders((prev) => prev.filter((o) => o.id !== orderId));
+    try {
+      await fetch(`/api/orders/${orderId}`, {
+        method: 'DELETE',
+      });
+    } catch (e) {
+      console.warn('Error deleting order on server:', e);
+    }
+  };
+
+  const handleAddManualOrder = async (newOrder: Order) => {
+    setOrders((prev) => [newOrder, ...prev.filter((o) => o.id !== newOrder.id)]);
+    try {
+      await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newOrder),
+      });
+    } catch (e) {
+      console.warn('Error posting manual order to server:', e);
+    }
   };
 
   const handleUpdateProduct = (updated: MenuItem) => {
@@ -355,10 +478,6 @@ export default function App() {
 
   const handleUpdateChifaInfo = (newInfo: typeof CHIFA_INFO) => {
     setChifaInfo(newInfo);
-  };
-
-  const handleDeleteOrder = (orderId: string) => {
-    setOrders((prev) => prev.filter((o) => o.id !== orderId));
   };
 
   const scrollToMenu = () => {
@@ -917,6 +1036,10 @@ export default function App() {
         onUpdateSectionImage={handleUpdateSectionImage}
         chifaInfo={chifaInfo}
         onUpdateChifaInfo={handleUpdateChifaInfo}
+        onAddOrder={handleAddManualOrder}
+        onRefreshOrders={fetchServerOrders}
+        isServerConnected={isServerConnected}
+        lastSyncTime={lastSyncTime}
       />
 
       {/* Footer */}

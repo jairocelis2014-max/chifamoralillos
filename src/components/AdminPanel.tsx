@@ -3,10 +3,11 @@ import {
   X, ShieldCheck, BarChart3, ListOrdered, Package, Plus, Trash2, Edit3, Check, 
   Phone, MessageCircle, LogOut, DollarSign, RotateCcw, Upload, Image as ImageIcon, 
   Eye, Settings, TrendingUp, ShoppingBag, Bike, Store, Armchair, AlertCircle, 
-  ArrowUpRight, Layers, FolderPlus, HelpCircle
+  ArrowUpRight, Layers, FolderPlus, HelpCircle, FileSpreadsheet, Printer, Download,
+  FileText, RefreshCw, CheckCircle2, Clock, User, MapPin, Receipt, Search
 } from 'lucide-react';
 import { MenuItem, MenuSection, MENU_SECTIONS, CHIFA_INFO } from '../data/chifaMenu';
-import { Order } from '../types';
+import { Order, CartItem, ServiceType, PaymentMethod } from '../types';
 
 interface AdminPanelProps {
   isOpen: boolean;
@@ -17,6 +18,10 @@ interface AdminPanelProps {
   orders: Order[];
   onUpdateOrderStatus: (orderId: string, status: Order['status']) => void;
   onDeleteOrder?: (orderId: string) => void;
+  onAddOrder?: (order: Order) => void;
+  onRefreshOrders?: () => void;
+  isServerConnected?: boolean;
+  lastSyncTime?: Date;
   products: MenuItem[];
   onUpdateProduct: (product: MenuItem) => void;
   onAddProduct: (product: MenuItem) => void;
@@ -41,6 +46,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   orders,
   onUpdateOrderStatus,
   onDeleteOrder,
+  onAddOrder,
+  onRefreshOrders,
+  isServerConnected = true,
+  lastSyncTime,
   products,
   onUpdateProduct,
   onAddProduct,
@@ -117,6 +126,42 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     hours: chifaInfo.hours,
   });
   const [settingsSaved, setSettingsSaved] = useState(false);
+
+  // PDF Report & Excel Modal States
+  const [showPdfReportModal, setShowPdfReportModal] = useState(false);
+  const [selectedOrderDetail, setSelectedOrderDetail] = useState<Order | null>(null);
+
+  // Manual Order Creation State (Cashier & Phone Orders)
+  const [showManualOrderModal, setShowManualOrderModal] = useState(false);
+  const [manualOrderForm, setManualOrderForm] = useState<{
+    customerName: string;
+    customerPhone: string;
+    serviceType: ServiceType;
+    addressOrTable: string;
+    paymentMethod: PaymentMethod;
+    paymentVoucher: string;
+    notes: string;
+    deliveryFee: number;
+    selectedDishId: string;
+    selectedQuantity: number;
+    items: CartItem[];
+  }>({
+    customerName: '',
+    customerPhone: '',
+    serviceType: 'delivery',
+    addressOrTable: '',
+    paymentMethod: 'Yape',
+    paymentVoucher: '',
+    notes: '',
+    deliveryFee: 0,
+    selectedDishId: '',
+    selectedQuantity: 1,
+    items: [],
+  });
+
+  // Sales Table filters
+  const [salesSearchQuery, setSalesSearchQuery] = useState('');
+  const [salesStatusFilter, setSalesStatusFilter] = useState('todos');
 
   const handleLoginFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -210,6 +255,196 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     if (orderStatusFilter === 'todos') return orders;
     return orders.filter((o) => o.status === orderStatusFilter);
   }, [orders, orderStatusFilter]);
+
+  // Filtered sales table for Dashboard
+  const filteredSalesTable = useMemo(() => {
+    return filteredOrdersForReport.filter((o) => {
+      if (salesStatusFilter !== 'todos' && o.status !== salesStatusFilter) return false;
+      if (salesSearchQuery.trim()) {
+        const q = salesSearchQuery.toLowerCase();
+        const matchesName = (o.customerName || '').toLowerCase().includes(q);
+        const matchesId = (o.id || '').toLowerCase().includes(q);
+        const matchesPhone = (o.customerPhone || '').includes(q);
+        const matchesAddress = (o.addressOrTable || '').toLowerCase().includes(q);
+        const matchesDishes = o.items.some((it) => it.name.toLowerCase().includes(q));
+        const matchesVoucher = (o.paymentVoucher || '').toLowerCase().includes(q);
+        return matchesName || matchesId || matchesPhone || matchesAddress || matchesDishes || matchesVoucher;
+      }
+      return true;
+    });
+  }, [filteredOrdersForReport, salesStatusFilter, salesSearchQuery]);
+
+  // Export to Excel handler (CSV with UTF-8 BOM and semicolon delimiters)
+  const handleExportExcel = () => {
+    const BOM = "\uFEFF";
+    const headers = [
+      "Código Pedido",
+      "Fecha",
+      "Hora",
+      "Cliente",
+      "Teléfono",
+      "Modalidad",
+      "Dirección / Referencia",
+      "Método de Pago",
+      "N° Operación / Voucher",
+      "Detalle de Platos Solicitados",
+      "Notas Adicionales",
+      "Subtotal (S/.)",
+      "Costo Envío (S/.)",
+      "Total Pagado (S/.)",
+      "Estado Pedido"
+    ];
+
+    const rows = filteredOrdersForReport.map((order) => {
+      const d = new Date(order.createdAt);
+      const fecha = d.toLocaleDateString('es-PE');
+      const hora = d.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+      const modalidad = order.serviceType === 'delivery' ? 'Delivery a Domicilio' : order.serviceType === 'pickup' ? 'Para Llevar' : 'Consumo en Salón';
+      const platos = order.items
+        .map((it) => `${it.quantity}x ${it.name}${it.selectedEntrance ? ` (${it.selectedEntrance})` : ''} [S/ ${(it.price * it.quantity).toFixed(2)}]`)
+        .join(' + ');
+
+      return [
+        `"${order.id}"`,
+        `"${fecha}"`,
+        `"${hora}"`,
+        `"${(order.customerName || '').replace(/"/g, '""')}"`,
+        `"${(order.customerPhone || '').replace(/"/g, '""')}"`,
+        `"${modalidad}"`,
+        `"${(order.addressOrTable || '').replace(/"/g, '""')}"`,
+        `"${order.paymentMethod || 'Efectivo'}"`,
+        `"${(order.paymentVoucher || '-').replace(/"/g, '""')}"`,
+        `"${platos.replace(/"/g, '""')}"`,
+        `"${(order.notes || '-').replace(/"/g, '""')}"`,
+        order.subtotal.toFixed(2),
+        order.deliveryFee.toFixed(2),
+        order.total.toFixed(2),
+        `"${order.status}"`
+      ].join(';');
+    });
+
+    const totalIngresos = filteredOrdersForReport
+      .filter((o) => o.status !== 'Cancelado')
+      .reduce((sum, o) => sum + o.total, 0);
+
+    const summaryRow = [
+      `"TOTAL GENERAL"`,
+      `""`,
+      `""`,
+      `"${filteredOrdersForReport.length} PEDIDOS REGISTRADOS"`,
+      `""`,
+      `""`,
+      `""`,
+      `""`,
+      `""`,
+      `""`,
+      `""`,
+      `""`,
+      `""`,
+      totalIngresos.toFixed(2),
+      `""`
+    ].join(';');
+
+    const csvData = BOM + [headers.join(';'), ...rows, summaryRow].join('\r\n');
+    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    link.href = url;
+    link.download = `Reporte_Ventas_Chifa_Moralillos_${dateStr}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handlePrintPdf = () => {
+    window.print();
+  };
+
+  // Manual Order Handlers (Counter / Phone)
+  const handleAddManualItem = () => {
+    if (!manualOrderForm.selectedDishId) return;
+    const prod = products.find((p) => p.id === manualOrderForm.selectedDishId);
+    if (!prod) return;
+
+    const existingIndex = manualOrderForm.items.findIndex((it) => it.productId === prod.id);
+    if (existingIndex > -1) {
+      const updated = [...manualOrderForm.items];
+      updated[existingIndex].quantity += manualOrderForm.selectedQuantity || 1;
+      setManualOrderForm({ ...manualOrderForm, items: updated });
+    } else {
+      const newItem: CartItem = {
+        id: `${prod.id}-${Date.now()}`,
+        productId: prod.id,
+        name: prod.name,
+        code: prod.id,
+        price: prod.price,
+        quantity: manualOrderForm.selectedQuantity || 1,
+        image: prod.image,
+      };
+      setManualOrderForm({ ...manualOrderForm, items: [...manualOrderForm.items, newItem] });
+    }
+  };
+
+  const handleRemoveManualItem = (productId: string) => {
+    setManualOrderForm({
+      ...manualOrderForm,
+      items: manualOrderForm.items.filter((it) => it.productId !== productId),
+    });
+  };
+
+  const handleSaveManualOrder = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (manualOrderForm.items.length === 0) {
+      alert('Por favor agrega al menos un plato al pedido');
+      return;
+    }
+    if (!manualOrderForm.customerName.trim()) {
+      alert('Ingresa el nombre del cliente');
+      return;
+    }
+
+    const subtotal = manualOrderForm.items.reduce((s, it) => s + it.price * it.quantity, 0);
+    const fee = Number(manualOrderForm.deliveryFee) || 0;
+    const total = subtotal + fee;
+
+    const newOrder: Order = {
+      id: `MORALILLO-${Math.floor(1000 + Math.random() * 9000)}`,
+      createdAt: new Date().toISOString(),
+      customerName: manualOrderForm.customerName.trim(),
+      customerPhone: manualOrderForm.customerPhone.trim() || 'No especificado',
+      serviceType: manualOrderForm.serviceType,
+      addressOrTable: manualOrderForm.addressOrTable.trim() || (manualOrderForm.serviceType === 'dinein' ? 'Mesa en Salón' : 'Local Chifa'),
+      paymentMethod: manualOrderForm.paymentMethod,
+      paymentVoucher: manualOrderForm.paymentVoucher.trim() || undefined,
+      notes: manualOrderForm.notes.trim() || undefined,
+      items: manualOrderForm.items,
+      subtotal,
+      deliveryFee: fee,
+      total,
+      status: 'Pendiente',
+    };
+
+    if (onAddOrder) {
+      onAddOrder(newOrder);
+    }
+
+    setManualOrderForm({
+      customerName: '',
+      customerPhone: '',
+      serviceType: 'delivery',
+      addressOrTable: '',
+      paymentMethod: 'Yape',
+      paymentVoucher: '',
+      notes: '',
+      deliveryFee: 0,
+      selectedDishId: '',
+      selectedQuantity: 1,
+      items: [],
+    });
+    setShowManualOrderModal(false);
+  };
 
   // Filtered products list for product management
   const filteredProductsList = useMemo(() => {
@@ -623,6 +858,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             {/* ================= TAB 1: DASHBOARD / VENTAS & INDICADORES ================= */}
             {activeTab === 'reports' && (
               <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+                {/* Header with Title & Filter Pills */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-gray-800 pb-3">
                   <div>
                     <h3 className="font-black text-white text-base flex items-center gap-2">
@@ -653,6 +889,69 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           : 'Todo'}
                       </button>
                     ))}
+                  </div>
+                </div>
+
+                {/* Quick Action Toolbar: EXCEL, PDF, MANUAL ORDER & LIVE SYNC */}
+                <div className="bg-[#1f1418] p-3 rounded-2xl border border-amber-500/30 flex flex-wrap items-center justify-between gap-3 shadow-lg">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* Excel Export Button */}
+                    <button
+                      onClick={handleExportExcel}
+                      className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow-md transition active:scale-95"
+                      title="Descargar reporte compatible con Microsoft Excel en formato .csv"
+                    >
+                      <FileSpreadsheet className="w-4 h-4 text-emerald-100" />
+                      <span>Exportar a Excel (.csv)</span>
+                    </button>
+
+                    {/* PDF Report Button */}
+                    <button
+                      onClick={() => setShowPdfReportModal(true)}
+                      className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black text-xs rounded-xl shadow-md transition active:scale-95"
+                      title="Generar vista ejecutiva para imprimir o guardar como PDF"
+                    >
+                      <Printer className="w-4 h-4 text-amber-100" />
+                      <span>Reporte PDF / Imprimir</span>
+                    </button>
+
+                    {/* Manual Order Button (Phone / Counter) */}
+                    <button
+                      onClick={() => setShowManualOrderModal(true)}
+                      className="flex items-center gap-1.5 px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-black font-black text-xs rounded-xl shadow-md transition active:scale-95"
+                      title="Registrar una venta telefónica o de mostrador directamente"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Registrar Pedido Manual</span>
+                    </button>
+                  </div>
+
+                  {/* Real-Time Server Sync Indicator */}
+                  <div className="flex items-center gap-2 text-xs">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2a1b20] border border-gray-700 rounded-xl text-gray-300">
+                      <span className="relative flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                      </span>
+                      <span className="font-semibold text-[11px] text-emerald-400">
+                        {isServerConnected ? 'Sincronizado en Vivo' : 'Modo Offline'}
+                      </span>
+                      {lastSyncTime && (
+                        <span className="text-[10px] text-gray-400 font-mono hidden sm:inline">
+                          ({lastSyncTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })})
+                        </span>
+                      )}
+                    </div>
+
+                    {onRefreshOrders && (
+                      <button
+                        onClick={onRefreshOrders}
+                        className="p-1.5 bg-[#2a1b20] hover:bg-gray-800 border border-gray-700 text-gray-300 hover:text-white rounded-xl transition active:rotate-180"
+                        title="Actualizar datos del servidor ahora"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -790,6 +1089,213 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       </div>
                     </div>
                   </div>
+                </div>
+
+                {/* ================= COMPLETE SALES LOG TABLE (CONTROL TOTAL DE VENTAS) ================= */}
+                <div className="bg-[#1c1316] p-4 sm:p-5 rounded-2xl border border-gray-800 space-y-4 shadow-md">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-gray-800 pb-3">
+                    <div>
+                      <h4 className="font-extrabold text-white text-sm sm:text-base flex items-center gap-2">
+                        <Receipt className="w-4 h-4 text-amber-400" />
+                        <span>Control General de Ventas y Pedidos ({filteredSalesTable.length})</span>
+                      </h4>
+                      <p className="text-xs text-gray-400">
+                        Historial completo de pedidos web, WhatsApp y presenciales con vouchers y montos
+                      </p>
+                    </div>
+
+                    {/* Search and Status Filter */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <div className="relative">
+                        <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                          type="text"
+                          placeholder="Buscar cliente, código, plato..."
+                          value={salesSearchQuery}
+                          onChange={(e) => setSalesSearchQuery(e.target.value)}
+                          className="bg-[#25171b] text-white text-xs pl-8 pr-3 py-1.5 rounded-xl border border-gray-700 focus:outline-none focus:border-amber-400 w-44 sm:w-56"
+                        />
+                      </div>
+
+                      <select
+                        value={salesStatusFilter}
+                        onChange={(e) => setSalesStatusFilter(e.target.value)}
+                        className="bg-[#25171b] text-white text-xs font-bold p-1.5 rounded-xl border border-gray-700 focus:outline-none focus:border-amber-400"
+                      >
+                        <option value="todos">Todos los Estados</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En cocina al wok">En cocina al wok</option>
+                        <option value="En camino">En camino</option>
+                        <option value="Entregado">Entregado</option>
+                        <option value="Cancelado">Cancelado</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {filteredSalesTable.length === 0 ? (
+                    <div className="py-10 text-center text-gray-400 space-y-2">
+                      <ShoppingBag className="w-8 h-8 mx-auto text-gray-600" />
+                      <p className="text-xs font-bold text-gray-300">No se encontraron ventas con este criterio</p>
+                      <p className="text-[11px] text-gray-500">Prueba cambiando el rango de fechas o el término de búsqueda.</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto no-scrollbar">
+                      <table className="w-full text-left border-collapse text-xs">
+                        <thead>
+                          <tr className="border-b border-gray-800 text-gray-400 font-bold bg-[#170e11]">
+                            <th className="py-2.5 px-3">Pedido / Fecha</th>
+                            <th className="py-2.5 px-3">Cliente</th>
+                            <th className="py-2.5 px-3">Modalidad / Destino</th>
+                            <th className="py-2.5 px-3">Platos</th>
+                            <th className="py-2.5 px-3">Pago / Voucher</th>
+                            <th className="py-2.5 px-3 text-right">Total</th>
+                            <th className="py-2.5 px-3">Estado</th>
+                            <th className="py-2.5 px-3 text-center">Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-800/60">
+                          {filteredSalesTable.map((order) => (
+                            <tr key={order.id} className="hover:bg-white/[0.02] transition">
+                              {/* Order ID & Time */}
+                              <td className="py-3 px-3">
+                                <div className="font-mono font-black text-amber-400 text-xs">{order.id}</div>
+                                <div className="text-[10px] text-gray-400">
+                                  {new Date(order.createdAt).toLocaleDateString('es-PE')} • {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </div>
+                              </td>
+
+                              {/* Customer */}
+                              <td className="py-3 px-3">
+                                <div className="font-bold text-white text-xs">{order.customerName}</div>
+                                <div className="text-[11px] text-gray-400 font-mono flex items-center gap-1">
+                                  <span>{order.customerPhone}</span>
+                                </div>
+                              </td>
+
+                              {/* Modality & Address */}
+                              <td className="py-3 px-3 max-w-[180px]">
+                                <span className={`inline-block text-[10px] px-2 py-0.5 rounded-full font-bold mb-1 ${
+                                  order.serviceType === 'delivery'
+                                    ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40'
+                                    : order.serviceType === 'pickup'
+                                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                                    : 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
+                                }`}>
+                                  {order.serviceType === 'delivery' ? '🛵 Delivery' : order.serviceType === 'pickup' ? '🛍️ Para Llevar' : '🍽️ En Salón'}
+                                </span>
+                                <div className="text-[11px] text-gray-300 truncate" title={order.addressOrTable}>
+                                  {order.addressOrTable}
+                                </div>
+                              </td>
+
+                              {/* Dishes */}
+                              <td className="py-3 px-3 max-w-[200px]">
+                                <div className="text-[11px] text-gray-200 line-clamp-2">
+                                  {order.items.map((it) => `${it.quantity}x ${it.name}`).join(', ')}
+                                </div>
+                                {order.notes && (
+                                  <div className="text-[10px] text-amber-400/90 italic truncate">
+                                    Nota: {order.notes}
+                                  </div>
+                                )}
+                              </td>
+
+                              {/* Payment & Voucher */}
+                              <td className="py-3 px-3">
+                                <div className="font-bold text-white text-xs">{order.paymentMethod || 'Efectivo'}</div>
+                                {order.paymentVoucher ? (
+                                  <div className="text-[10px] text-emerald-400 font-mono">
+                                    Op: {order.paymentVoucher}
+                                  </div>
+                                ) : (
+                                  <div className="text-[10px] text-gray-500">-</div>
+                                )}
+                              </td>
+
+                              {/* Total */}
+                              <td className="py-3 px-3 text-right">
+                                <div className="font-mono font-black text-amber-400 text-xs">
+                                  S/. {order.total.toFixed(2)}
+                                </div>
+                                {order.deliveryFee > 0 && (
+                                  <div className="text-[9px] text-gray-400 font-mono">
+                                    (Inc. envío S/ {order.deliveryFee.toFixed(2)})
+                                  </div>
+                                )}
+                              </td>
+
+                              {/* Status Dropdown */}
+                              <td className="py-3 px-3">
+                                <select
+                                  value={order.status}
+                                  onChange={(e) => onUpdateOrderStatus(order.id, e.target.value as Order['status'])}
+                                  className={`text-[11px] font-bold py-1 px-2 rounded-lg border focus:outline-none ${
+                                    order.status === 'Entregado'
+                                      ? 'bg-emerald-950/80 text-emerald-300 border-emerald-800'
+                                      : order.status === 'Cancelado'
+                                      ? 'bg-red-950/80 text-red-300 border-red-800'
+                                      : order.status === 'En cocina al wok'
+                                      ? 'bg-amber-950/80 text-amber-300 border-amber-800'
+                                      : order.status === 'En camino'
+                                      ? 'bg-blue-950/80 text-blue-300 border-blue-800'
+                                      : 'bg-yellow-950/80 text-yellow-300 border-yellow-800'
+                                  }`}
+                                >
+                                  <option value="Pendiente">Pendiente</option>
+                                  <option value="En cocina al wok">En cocina al wok</option>
+                                  <option value="En camino">En camino</option>
+                                  <option value="Entregado">Entregado</option>
+                                  <option value="Cancelado">Cancelado</option>
+                                </select>
+                              </td>
+
+                              {/* Actions */}
+                              <td className="py-3 px-3 text-center">
+                                <div className="flex items-center justify-center gap-1.5">
+                                  {/* Detail Modal button */}
+                                  <button
+                                    onClick={() => setSelectedOrderDetail(order)}
+                                    className="p-1.5 bg-[#25171b] hover:bg-[#321f24] text-amber-300 rounded-lg border border-gray-700 transition"
+                                    title="Ver detalle del pedido"
+                                  >
+                                    <Eye className="w-3.5 h-3.5" />
+                                  </button>
+
+                                  {/* WhatsApp */}
+                                  <a
+                                    href={`https://wa.me/51${order.customerPhone}?text=Hola%20${encodeURIComponent(
+                                      order.customerName
+                                    )},%20te%20escribimos%20de%20Chifa%20Moralillos%20sobre%20tu%20pedido%20${order.id}.`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-1.5 bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#25D366] rounded-lg border border-[#25D366]/40 transition"
+                                    title="Escribir por WhatsApp"
+                                  >
+                                    <MessageCircle className="w-3.5 h-3.5" />
+                                  </a>
+
+                                  {/* Delete */}
+                                  {onDeleteOrder && (
+                                    <button
+                                      onClick={() => {
+                                        if (window.confirm(`¿Deseas archivar/eliminar el pedido ${order.id}?`)) {
+                                          onDeleteOrder(order.id);
+                                        }
+                                      }}
+                                      className="p-1.5 bg-red-950/40 hover:bg-red-900 text-red-400 rounded-lg border border-red-900/40 transition"
+                                      title="Eliminar pedido"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -1611,6 +2117,516 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* ================= MODAL: REPORTE EJECUTIVO PDF / IMPRIMIR ================= */}
+        {showPdfReportModal && (
+          <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto print:p-0 print:bg-white print:static">
+            <div className="bg-white text-gray-900 rounded-3xl w-full max-w-4xl max-h-[92vh] overflow-y-auto shadow-2xl border border-gray-300 relative print:border-none print:shadow-none print:max-h-none print:w-full">
+              
+              {/* Sticky Top Bar (Hidden in Print) */}
+              <div className="sticky top-0 bg-gray-900 text-white p-3 sm:p-4 flex items-center justify-between z-30 print:hidden border-b border-gray-800">
+                <div className="flex items-center gap-2">
+                  <Printer className="w-5 h-5 text-amber-400" />
+                  <span className="font-extrabold text-sm sm:text-base">Vista Previa de Reporte de Ventas</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handlePrintPdf}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-black font-black text-xs rounded-xl shadow transition active:scale-95"
+                  >
+                    <Printer className="w-4 h-4" />
+                    <span>Imprimir / Guardar como PDF</span>
+                  </button>
+                  <button
+                    onClick={handleExportExcel}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow transition active:scale-95"
+                  >
+                    <FileSpreadsheet className="w-4 h-4" />
+                    <span>Exportar Excel</span>
+                  </button>
+                  <button
+                    onClick={() => setShowPdfReportModal(false)}
+                    className="p-1.5 rounded-full bg-gray-800 text-gray-400 hover:text-white"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Printable Document Body */}
+              <div className="p-6 sm:p-8 space-y-6 print:p-4">
+                {/* Official Letterhead */}
+                <div className="flex flex-col sm:flex-row items-center justify-between border-b-2 border-gray-900 pb-5 gap-4">
+                  <div className="flex items-center gap-4">
+                    <img
+                      src="/assets/aistudio/logotipo_png_f69f09a6.png"
+                      alt="Logo Chifa Moralillos"
+                      className="w-20 h-20 object-contain shrink-0"
+                    />
+                    <div>
+                      <h1 className="text-xl sm:text-2xl font-black text-gray-900 uppercase tracking-wide">
+                        CHIFA MORALILLOS
+                      </h1>
+                      <p className="text-xs font-bold text-red-600">
+                        ¡Auténtica Comida China & Sabor Peruanazo!
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Calle Francisco Bardalez N° 701 • Yurimaguas, Loreto
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Central de Pedidos: <strong>(065) 762082</strong> • WhatsApp: <strong>941 428 121</strong>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="text-right sm:border-l sm:border-gray-300 sm:pl-6 space-y-1">
+                    <div className="inline-block bg-red-100 text-red-800 text-xs font-black px-3 py-1 rounded-full uppercase">
+                      Reporte Oficial de Ventas
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Fecha de Emisión: <strong>{new Date().toLocaleDateString('es-PE')}</strong>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Hora: <strong>{new Date().toLocaleTimeString('es-PE')}</strong>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Período Seleccionado: <strong className="capitalize">{reportFilter === 'diario' ? 'Hoy' : reportFilter === 'semanal' ? 'Última Semana' : reportFilter === 'mensual' ? 'Mes en Curso' : 'Todo el Historial'}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* KPI Summary Block */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-gray-50 p-4 rounded-2xl border border-gray-200">
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] font-bold text-gray-500 uppercase">Total Facturado</span>
+                    <div className="text-lg sm:text-xl font-black text-gray-900 font-mono">
+                      S/. {totalSales.toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] font-bold text-gray-500 uppercase">N° Pedidos</span>
+                    <div className="text-lg sm:text-xl font-black text-gray-900 font-mono">
+                      {filteredOrdersForReport.length} órdenes
+                    </div>
+                  </div>
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] font-bold text-gray-500 uppercase">Ticket Promedio</span>
+                    <div className="text-lg sm:text-xl font-black text-gray-900 font-mono">
+                      S/. {filteredOrdersForReport.length > 0 ? (totalSales / filteredOrdersForReport.length).toFixed(2) : '0.00'}
+                    </div>
+                  </div>
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] font-bold text-gray-500 uppercase">Delivery vs Salón</span>
+                    <div className="text-xs font-bold text-gray-700">
+                      Dev: S/. {salesByModality.delivery.toFixed(2)} | Salón: S/. {salesByModality.salon.toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Itemized Sales Table */}
+                <div className="space-y-2">
+                  <h3 className="font-extrabold text-sm text-gray-900 uppercase tracking-wider">
+                    Desglose de Pedidos Registrados ({filteredOrdersForReport.length})
+                  </h3>
+
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="bg-gray-100 border-y border-gray-300 text-gray-700 font-black">
+                        <th className="py-2 px-2">Código</th>
+                        <th className="py-2 px-2">Fecha / Hora</th>
+                        <th className="py-2 px-2">Cliente / Teléfono</th>
+                        <th className="py-2 px-2">Modalidad & Destino</th>
+                        <th className="py-2 px-2">Platos Solicitados</th>
+                        <th className="py-2 px-2">Pago / Voucher</th>
+                        <th className="py-2 px-2 text-right">Total</th>
+                        <th className="py-2 px-2 text-center">Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {filteredOrdersForReport.map((order) => (
+                        <tr key={order.id} className="text-gray-800">
+                          <td className="py-2.5 px-2 font-mono font-bold text-red-700 whitespace-nowrap">
+                            {order.id}
+                          </td>
+                          <td className="py-2.5 px-2 text-[11px] whitespace-nowrap text-gray-600">
+                            {new Date(order.createdAt).toLocaleDateString('es-PE')} {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </td>
+                          <td className="py-2.5 px-2">
+                            <div className="font-bold text-gray-900">{order.customerName}</div>
+                            <div className="text-[10px] text-gray-500 font-mono">{order.customerPhone}</div>
+                          </td>
+                          <td className="py-2.5 px-2 text-[11px]">
+                            <span className="font-bold block">
+                              {order.serviceType === 'delivery' ? 'Delivery' : order.serviceType === 'pickup' ? 'Para Llevar' : 'Salón'}
+                            </span>
+                            <span className="text-gray-500 truncate block max-w-[130px]">{order.addressOrTable}</span>
+                          </td>
+                          <td className="py-2.5 px-2 text-[11px]">
+                            {order.items.map((it) => `${it.quantity}x ${it.name}`).join(', ')}
+                            {order.notes && (
+                              <span className="block text-[10px] text-gray-500 italic">Nota: {order.notes}</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-2 text-[11px]">
+                            <span className="font-bold">{order.paymentMethod || 'Efectivo'}</span>
+                            {order.paymentVoucher && (
+                              <span className="block text-[10px] text-emerald-700 font-mono font-bold">Op: {order.paymentVoucher}</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-2 text-right font-mono font-bold whitespace-nowrap">
+                            S/. {order.total.toFixed(2)}
+                          </td>
+                          <td className="py-2.5 px-2 text-center text-[10px] font-bold">
+                            <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 border border-gray-300">
+                              {order.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr className="border-t-2 border-gray-900 bg-gray-50 font-black text-gray-900">
+                        <td colSpan={6} className="py-3 px-2 text-right uppercase">
+                          TOTAL GENERAL RECAUDADO ({filteredOrdersForReport.length} Pedidos):
+                        </td>
+                        <td className="py-3 px-2 text-right font-mono text-sm text-red-700">
+                          S/. {totalSales.toFixed(2)}
+                        </td>
+                        <td></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+
+                {/* Signatures & Auditor Footer */}
+                <div className="pt-8 border-t border-gray-300 flex justify-between items-end text-xs text-gray-500">
+                  <div className="text-center w-52">
+                    <div className="border-b border-gray-400 mb-1 h-12" />
+                    <p className="font-bold text-gray-800">Firma Administrador</p>
+                    <p className="text-[10px]">Chifa Moralillos - Yurimaguas</p>
+                  </div>
+                  <div className="text-right text-[10px]">
+                    <p>Sistema Web Chifa Moralillos v3.2</p>
+                    <p>Reporte autogenerado con validez interna administrativa.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ================= MODAL: REGISTRAR PEDIDO MANUAL (CAJA / TELÉFONO) ================= */}
+        {showManualOrderModal && (
+          <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+            <div className="bg-[#1b1114] text-gray-100 rounded-3xl w-full max-w-xl overflow-hidden border border-amber-500/50 shadow-2xl my-auto">
+              <div className="p-4 bg-[#23161a] border-b border-gray-800 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-amber-500/20 text-amber-400 rounded-xl">
+                    <Receipt className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-white text-base">Registrar Pedido Manual</h3>
+                    <p className="text-xs text-amber-400">Para ventas de mostrador, salón o pedidos telefónicos</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowManualOrderModal(false)}
+                  className="p-1 rounded-full bg-[#2a1d21] text-gray-400 hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveManualOrder} className="p-4 sm:p-6 space-y-4 text-xs">
+                {/* Customer Data */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-gray-300 font-semibold mb-1">Nombre del Cliente (*):</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Ej: Jackelyn, Juan Pérez..."
+                      value={manualOrderForm.customerName}
+                      onChange={(e) => setManualOrderForm({ ...manualOrderForm, customerName: e.target.value })}
+                      className="w-full bg-[#150d0f] text-white p-2.5 rounded-xl border border-gray-800 focus:border-amber-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-300 font-semibold mb-1">Teléfono / Celular:</label>
+                    <input
+                      type="tel"
+                      placeholder="Ej: 907373993"
+                      value={manualOrderForm.customerPhone}
+                      onChange={(e) => setManualOrderForm({ ...manualOrderForm, customerPhone: e.target.value })}
+                      className="w-full bg-[#150d0f] text-white p-2.5 rounded-xl border border-gray-800 focus:border-amber-400 font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-gray-300 font-semibold mb-1">Modalidad:</label>
+                    <select
+                      value={manualOrderForm.serviceType}
+                      onChange={(e) => setManualOrderForm({ ...manualOrderForm, serviceType: e.target.value as ServiceType })}
+                      className="w-full bg-[#150d0f] text-white p-2.5 rounded-xl border border-gray-800 font-bold"
+                    >
+                      <option value="delivery">🛵 Delivery</option>
+                      <option value="pickup">🛍️ Para Llevar</option>
+                      <option value="dinein">🍽️ Mesa en Salón</option>
+                    </select>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-gray-300 font-semibold mb-1">Dirección / N° de Mesa (*):</label>
+                    <input
+                      type="text"
+                      placeholder="Ej: Raymondi / Mesa 4..."
+                      value={manualOrderForm.addressOrTable}
+                      onChange={(e) => setManualOrderForm({ ...manualOrderForm, addressOrTable: e.target.value })}
+                      className="w-full bg-[#150d0f] text-white p-2.5 rounded-xl border border-gray-800"
+                    />
+                  </div>
+                </div>
+
+                {/* Add Dishes Section */}
+                <div className="bg-[#150d0f] p-3 rounded-2xl border border-gray-800 space-y-2.5">
+                  <div className="font-bold text-amber-400 flex items-center justify-between">
+                    <span>Seleccionar Platos de la Carta:</span>
+                    <span className="text-[11px] text-gray-400">Total platos en carta: {products.length}</span>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <select
+                      value={manualOrderForm.selectedDishId}
+                      onChange={(e) => setManualOrderForm({ ...manualOrderForm, selectedDishId: e.target.value })}
+                      className="flex-1 bg-[#201518] text-white p-2.5 rounded-xl border border-gray-700 text-xs"
+                    >
+                      <option value="">-- Elige un plato --</option>
+                      {products.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.id} - {p.name} (S/. {p.price.toFixed(2)})
+                        </option>
+                      ))}
+                    </select>
+
+                    <input
+                      type="number"
+                      min="1"
+                      value={manualOrderForm.selectedQuantity}
+                      onChange={(e) => setManualOrderForm({ ...manualOrderForm, selectedQuantity: Math.max(1, parseInt(e.target.value) || 1) })}
+                      className="w-16 bg-[#201518] text-white p-2.5 rounded-xl border border-gray-700 font-bold text-center"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={handleAddManualItem}
+                      className="px-3 py-2.5 bg-amber-500 hover:bg-amber-400 text-black font-black rounded-xl transition"
+                    >
+                      Añadir
+                    </button>
+                  </div>
+
+                  {/* List of Added Dishes */}
+                  {manualOrderForm.items.length > 0 && (
+                    <div className="space-y-1.5 pt-2 border-t border-gray-800">
+                      {manualOrderForm.items.map((it) => (
+                        <div key={it.productId} className="flex items-center justify-between p-2 bg-[#201518] rounded-xl text-xs">
+                          <div>
+                            <span className="font-bold text-amber-400">{it.quantity}x</span> {it.name}
+                            <span className="text-gray-400 ml-2 font-mono">S/. {(it.price * it.quantity).toFixed(2)}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveManualItem(it.productId)}
+                            className="p-1 text-gray-400 hover:text-red-400"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Payment & Delivery Fee */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-gray-300 font-semibold mb-1">Método de Pago:</label>
+                    <select
+                      value={manualOrderForm.paymentMethod}
+                      onChange={(e) => setManualOrderForm({ ...manualOrderForm, paymentMethod: e.target.value as PaymentMethod })}
+                      className="w-full bg-[#150d0f] text-white p-2.5 rounded-xl border border-gray-800 font-bold"
+                    >
+                      <option value="Yape">Yape</option>
+                      <option value="Plin">Plin</option>
+                      <option value="Efectivo">Efectivo</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-300 font-semibold mb-1">N° Operación / Voucher:</label>
+                    <input
+                      type="text"
+                      placeholder="Ej: 11111"
+                      value={manualOrderForm.paymentVoucher}
+                      onChange={(e) => setManualOrderForm({ ...manualOrderForm, paymentVoucher: e.target.value })}
+                      className="w-full bg-[#150d0f] text-white p-2.5 rounded-xl border border-gray-800 font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-300 font-semibold mb-1">Costo Envío (S/.):</label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      value={manualOrderForm.deliveryFee}
+                      onChange={(e) => setManualOrderForm({ ...manualOrderForm, deliveryFee: parseFloat(e.target.value) || 0 })}
+                      className="w-full bg-[#150d0f] text-white p-2.5 rounded-xl border border-gray-800 font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 font-semibold mb-1">Notas / Observaciones del Cliente:</label>
+                  <input
+                    type="text"
+                    placeholder="Ej: Cubiertos descartables, salsa de tamarindo extra..."
+                    value={manualOrderForm.notes}
+                    onChange={(e) => setManualOrderForm({ ...manualOrderForm, notes: e.target.value })}
+                    className="w-full bg-[#150d0f] text-white p-2.5 rounded-xl border border-gray-800"
+                  />
+                </div>
+
+                {/* Subtotal and Total preview */}
+                <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-between font-bold">
+                  <span>Total a Cobrar:</span>
+                  <span className="text-base text-amber-400 font-mono font-black">
+                    S/. {(
+                      manualOrderForm.items.reduce((s, it) => s + it.price * it.quantity, 0) +
+                      (Number(manualOrderForm.deliveryFee) || 0)
+                    ).toFixed(2)}
+                  </span>
+                </div>
+
+                <div className="flex gap-2 pt-2 border-t border-gray-800">
+                  <button
+                    type="submit"
+                    className="flex-1 py-3 bg-gradient-to-r from-red-600 to-amber-500 hover:from-red-500 hover:to-amber-400 text-white font-black rounded-xl shadow transition"
+                  >
+                    Guardar y Registrar Venta
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowManualOrderModal(false)}
+                    className="py-3 px-4 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl transition"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ================= MODAL: DETALLE DEL PEDIDO (COMPROBANTE / VOUCHER) ================= */}
+        {selectedOrderDetail && (
+          <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+            <div className="bg-[#1b1114] text-gray-100 rounded-3xl w-full max-w-md overflow-hidden border border-amber-500/50 shadow-2xl my-auto">
+              <div className="p-4 bg-[#23161a] border-b border-gray-800 flex items-center justify-between">
+                <div>
+                  <h3 className="font-extrabold text-white text-base">Comprobante del Pedido</h3>
+                  <span className="font-mono text-xs font-black text-amber-400">{selectedOrderDetail.id}</span>
+                </div>
+                <button
+                  onClick={() => setSelectedOrderDetail(null)}
+                  className="p-1 rounded-full bg-[#2a1d21] text-gray-400 hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="p-4 sm:p-5 space-y-4 text-xs">
+                <div className="space-y-1.5 bg-[#140c0e] p-3 rounded-2xl border border-gray-800">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Cliente:</span>
+                    <strong className="text-white">{selectedOrderDetail.customerName}</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Teléfono:</span>
+                    <strong className="text-white font-mono">{selectedOrderDetail.customerPhone}</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Modalidad:</span>
+                    <span className="font-bold text-amber-300 capitalize">{selectedOrderDetail.serviceType}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Dirección / Mesa:</span>
+                    <span className="text-right text-gray-200">{selectedOrderDetail.addressOrTable}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Fecha y Hora:</span>
+                    <span className="text-gray-200 font-mono">
+                      {new Date(selectedOrderDetail.createdAt).toLocaleString('es-PE')}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Método de Pago:</span>
+                    <strong className="text-emerald-400">
+                      {selectedOrderDetail.paymentMethod}
+                      {selectedOrderDetail.paymentVoucher ? ` (Op: ${selectedOrderDetail.paymentVoucher})` : ''}
+                    </strong>
+                  </div>
+                  {selectedOrderDetail.notes && (
+                    <div className="pt-1 text-amber-400 italic">
+                      Nota del cliente: "{selectedOrderDetail.notes}"
+                    </div>
+                  )}
+                </div>
+
+                {/* Items List */}
+                <div className="space-y-1 bg-[#140c0e] p-3 rounded-2xl border border-gray-800">
+                  <span className="font-bold text-gray-400 block mb-1">Platos Solicitados:</span>
+                  {selectedOrderDetail.items.map((it, idx) => (
+                    <div key={idx} className="flex justify-between py-1 border-b border-gray-800/60 last:border-0">
+                      <span>
+                        <strong className="text-amber-400">{it.quantity}x</strong> {it.name}
+                        {it.selectedEntrance && ` (${it.selectedEntrance})`}
+                      </span>
+                      <span className="font-mono font-bold text-gray-300">
+                        S/. {(it.price * it.quantity).toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
+                  <div className="pt-2 flex justify-between font-black text-amber-400 text-sm">
+                    <span>Total Pedido:</span>
+                    <span className="font-mono">S/. {selectedOrderDetail.total.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <a
+                    href={`https://wa.me/51${selectedOrderDetail.customerPhone}?text=Hola%20${encodeURIComponent(
+                      selectedOrderDetail.customerName
+                    )},%20te%20escribimos%20de%20Chifa%20Moralillos%20sobre%20tu%20pedido%20${selectedOrderDetail.id}.`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-2.5 bg-[#25D366] hover:bg-[#20ba59] text-black font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>WhatsApp</span>
+                  </a>
+                  <button
+                    onClick={() => setSelectedOrderDetail(null)}
+                    className="py-2.5 px-4 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl transition"
+                  >
+                    Cerrar
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
