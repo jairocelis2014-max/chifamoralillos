@@ -96,6 +96,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [productSectionFilter, setProductSectionFilter] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Image Uploading States for Server Persistence
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [imageUploadStatus, setImageUploadStatus] = useState<string>('');
+
   // Section CRUD Modal state
   const [showSectionModal, setShowSectionModal] = useState(false);
   const [editingSection, setEditingSection] = useState<MenuSection | null>(null);
@@ -464,15 +468,44 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     });
   }, [products, productSectionFilter, productSearch]);
 
-  // File Upload Handlers (FileReader -> Base64 Data URL)
+  // File Upload Handlers with Automatic Server Disk Upload & URL Generation
   const handleProductImageFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setIsUploadingImage(true);
+      setImageUploadStatus('Subiendo imagen al servidor...');
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         if (reader.result) {
-          setProductForm((prev) => ({ ...prev, image: reader.result as string }));
+          const base64Data = reader.result as string;
+          try {
+            const res = await fetch('/api/upload-image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                image: base64Data,
+                name: productForm.id || productForm.name || 'plato',
+              }),
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.url) {
+                setProductForm((prev) => ({ ...prev, image: data.url }));
+                setImageUploadStatus('✓ Imagen guardada permanentemente en el servidor');
+                setIsUploadingImage(false);
+                setTimeout(() => setImageUploadStatus(''), 4000);
+                return;
+              }
+            }
+          } catch (err) {
+            console.warn('Error uploading image to server:', err);
+          }
+          // Fallback to base64 if server upload fails
+          setProductForm((prev) => ({ ...prev, image: base64Data }));
+          setImageUploadStatus('✓ Imagen cargada');
+          setTimeout(() => setImageUploadStatus(''), 3000);
         }
+        setIsUploadingImage(false);
       };
       reader.readAsDataURL(file);
     }
@@ -480,12 +513,32 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
   const handleSectionImageFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (file && activeSectionToUpload !== null) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        if (reader.result && activeSectionToUpload !== null) {
+      reader.onloadend = async () => {
+        if (reader.result) {
+          const base64Data = reader.result as string;
+          try {
+            const res = await fetch('/api/upload-image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                image: base64Data,
+                name: `carta_${activeSectionToUpload}`,
+              }),
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.url && onUpdateSectionImage) {
+                onUpdateSectionImage(activeSectionToUpload, data.url);
+                return;
+              }
+            }
+          } catch (err) {
+            console.warn('Section image upload error:', err);
+          }
           if (onUpdateSectionImage) {
-            onUpdateSectionImage(activeSectionToUpload, reader.result as string);
+            onUpdateSectionImage(activeSectionToUpload, base64Data);
           }
         }
       };
@@ -497,9 +550,29 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         if (reader.result) {
-          setSectionForm((prev) => ({ ...prev, image: reader.result as string }));
+          const base64Data = reader.result as string;
+          try {
+            const res = await fetch('/api/upload-image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                image: base64Data,
+                name: `carta_${sectionForm.number}`,
+              }),
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.url) {
+                setSectionForm((prev) => ({ ...prev, image: data.url }));
+                return;
+              }
+            }
+          } catch (err) {
+            console.warn('Section modal image upload error:', err);
+          }
+          setSectionForm((prev) => ({ ...prev, image: base64Data }));
         }
       };
       reader.readAsDataURL(file);
@@ -1439,12 +1512,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-gray-800 pb-3">
                   <div>
-                    <h3 className="font-black text-white text-base flex items-center gap-2">
-                      <Package className="w-5 h-5 text-amber-400" />
-                      <span>Gestión de Platos & Precios</span>
-                    </h3>
-                    <p className="text-xs text-gray-400">
-                      Modifica nombres, precios, fotos desde tu dispositivo y disponibilidad
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-black text-white text-base flex items-center gap-2">
+                        <Package className="w-5 h-5 text-amber-400" />
+                        <span>Gestión de Platos & Precios</span>
+                      </h3>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/40 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Servidor Conectado • Sincronización Permanente
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      Los platos, precios y fotos subidas se guardan en el servidor y se sincronizan al instante en laptops y celulares.
                     </p>
                   </div>
 
@@ -1850,11 +1929,39 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="w-full py-2.5 px-3 bg-gradient-to-r from-red-700 to-amber-600 hover:from-red-600 hover:to-amber-500 text-white font-extrabold rounded-xl flex items-center justify-center gap-2 shadow"
+                        disabled={isUploadingImage}
+                        className={`w-full py-2.5 px-3 font-extrabold rounded-xl flex items-center justify-center gap-2 shadow transition ${
+                          isUploadingImage
+                            ? 'bg-amber-700/60 text-white cursor-wait opacity-80'
+                            : 'bg-gradient-to-r from-red-700 to-amber-600 hover:from-red-600 hover:to-amber-500 text-white active:scale-95'
+                        }`}
                       >
-                        <Upload className="w-4 h-4" />
-                        <span>Subir Imagen desde mi Dispositivo</span>
+                        {isUploadingImage ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 animate-spin text-amber-200" />
+                            <span>Guardando foto en el servidor...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-4 h-4" />
+                            <span>Subir Imagen desde mi Dispositivo</span>
+                          </>
+                        )}
                       </button>
+
+                      {imageUploadStatus && (
+                        <div
+                          className={`p-2 rounded-xl text-[11px] font-bold text-center flex items-center justify-center gap-1.5 ${
+                            imageUploadStatus.includes('Error')
+                              ? 'bg-red-950/80 text-red-300 border border-red-800/80'
+                              : 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/80'
+                          }`}
+                        >
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          <span>{imageUploadStatus}</span>
+                        </div>
+                      )}
+
                       <input
                         type="url"
                         placeholder="O pega URL de imagen..."

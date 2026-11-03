@@ -2,6 +2,7 @@ import express from 'express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { INITIAL_PRODUCTS, MENU_SECTIONS, CHIFA_INFO } from './src/data/chifaMenu';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -9,17 +10,30 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json({ limit: '10mb' }));
+// High body limit to easily accept high-res photos
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const DATA_DIR = path.join(__dirname, 'data');
-const ORDERS_FILE = path.join(DATA_DIR, 'orders.json');
+const UPLOADS_DIR = path.join(__dirname, 'public', 'uploads');
 
-// Ensure data directory exists
+const ORDERS_FILE = path.join(DATA_DIR, 'orders.json');
+const PRODUCTS_FILE = path.join(DATA_DIR, 'products.json');
+const SECTIONS_FILE = path.join(DATA_DIR, 'sections.json');
+const INFO_FILE = path.join(DATA_DIR, 'info.json');
+
+// Ensure data & uploads directories exist
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
 
-// Initial orders including Jackelyn's order and initial records
+// Serve uploaded images publicly at /uploads/...
+app.use('/uploads', express.static(UPLOADS_DIR));
+
+// ==================== 1. ORDERS PERSISTENCE ====================
 const INITIAL_ORDERS = [
   {
     id: "MORALILLO-1864",
@@ -99,7 +113,6 @@ function readOrders(): any[] {
       const data = fs.readFileSync(ORDERS_FILE, 'utf-8');
       const parsed = JSON.parse(data);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        // Ensure Jackelyn's order is always present
         if (!parsed.some((o: any) => o.id === "MORALILLO-1864")) {
           parsed.unshift(INITIAL_ORDERS[0]);
           fs.writeFileSync(ORDERS_FILE, JSON.stringify(parsed, null, 2));
@@ -122,10 +135,145 @@ function writeOrders(orders: any[]) {
   }
 }
 
-// API Routes
+// ==================== 2. PRODUCTS PERSISTENCE ====================
+function readProducts(): any[] {
+  try {
+    if (fs.existsSync(PRODUCTS_FILE)) {
+      const data = fs.readFileSync(PRODUCTS_FILE, 'utf-8');
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        let updated = false;
+        parsed.forEach((prod: any) => {
+          const init = INITIAL_PRODUCTS.find((p) => p.id === prod.id);
+          if (init && init.image.startsWith('/uploads/') && !prod.image.startsWith('/uploads/')) {
+            prod.image = init.image;
+            updated = true;
+          }
+        });
+        if (updated) {
+          fs.writeFileSync(PRODUCTS_FILE, JSON.stringify(parsed, null, 2));
+        }
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.error('Error reading products file:', e);
+  }
+  // Initialize with official 210 products
+  fs.writeFileSync(PRODUCTS_FILE, JSON.stringify(INITIAL_PRODUCTS, null, 2));
+  return INITIAL_PRODUCTS;
+}
+
+function writeProducts(products: any[]) {
+  try {
+    fs.writeFileSync(PRODUCTS_FILE, JSON.stringify(products, null, 2));
+  } catch (e) {
+    console.error('Error writing products file:', e);
+  }
+}
+
+// ==================== 3. SECTIONS PERSISTENCE ====================
+function readSections(): any[] {
+  try {
+    if (fs.existsSync(SECTIONS_FILE)) {
+      const data = fs.readFileSync(SECTIONS_FILE, 'utf-8');
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.error('Error reading sections file:', e);
+  }
+  fs.writeFileSync(SECTIONS_FILE, JSON.stringify(MENU_SECTIONS, null, 2));
+  return MENU_SECTIONS;
+}
+
+function writeSections(sections: any[]) {
+  try {
+    fs.writeFileSync(SECTIONS_FILE, JSON.stringify(sections, null, 2));
+  } catch (e) {
+    console.error('Error writing sections file:', e);
+  }
+}
+
+// ==================== 4. CHIFA INFO PERSISTENCE ====================
+function readInfo(): any {
+  try {
+    if (fs.existsSync(INFO_FILE)) {
+      const data = fs.readFileSync(INFO_FILE, 'utf-8');
+      const parsed = JSON.parse(data);
+      if (parsed && parsed.name) {
+        if (!parsed.logoImage || parsed.logoImage.includes('logotipo_png')) {
+          parsed.logoImage = CHIFA_INFO.logoImage;
+          fs.writeFileSync(INFO_FILE, JSON.stringify(parsed, null, 2));
+        }
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.error('Error reading info file:', e);
+  }
+  fs.writeFileSync(INFO_FILE, JSON.stringify(CHIFA_INFO, null, 2));
+  return CHIFA_INFO;
+}
+
+function writeInfo(info: any) {
+  try {
+    fs.writeFileSync(INFO_FILE, JSON.stringify(info, null, 2));
+  } catch (e) {
+    console.error('Error writing info file:', e);
+  }
+}
+
+// ==================== API ROUTES ====================
+
+// --- UPLOAD IMAGE TO DISK (PERSISTENT & LIGHTWEIGHT) ---
+app.post('/api/upload-image', (req, res) => {
+  try {
+    const { image, name } = req.body;
+    if (!image) {
+      return res.status(400).json({ error: 'No se envió ninguna imagen' });
+    }
+
+    // If it's already an existing HTTP or relative URL, don't re-upload
+    if (image.startsWith('http://') || image.startsWith('https://') || image.startsWith('/uploads/') || image.startsWith('/assets/')) {
+      return res.json({ url: image });
+    }
+
+    // Match base64 data URL
+    const matches = image.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,(.+)$/);
+    if (!matches || matches.length !== 3) {
+      return res.status(400).json({ error: 'Formato de imagen base64 inválido' });
+    }
+
+    const rawExt = matches[1].toLowerCase();
+    const ext = rawExt === 'jpeg' ? 'jpg' : rawExt.includes('png') ? 'png' : rawExt.includes('webp') ? 'webp' : 'jpg';
+    const base64Data = matches[2];
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    const safeName = (name || 'plato')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]/g, '_')
+      .slice(0, 25);
+    const fileName = `${safeName}_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
+    const filePath = path.join(UPLOADS_DIR, fileName);
+
+    fs.writeFileSync(filePath, buffer);
+    const publicUrl = `/uploads/${fileName}`;
+    console.log(`[Upload] Image saved: ${publicUrl}`);
+    return res.json({ url: publicUrl, fileName });
+  } catch (error) {
+    console.error('Error saving image:', error);
+    return res.status(500).json({ error: 'Error al procesar la imagen' });
+  }
+});
+
+// --- ORDERS API ---
 app.get('/api/orders', (req, res) => {
-  const orders = readOrders();
-  res.json(orders);
+  res.json(readOrders());
 });
 
 app.post('/api/orders', (req, res) => {
@@ -165,7 +313,100 @@ app.delete('/api/orders/:id', (req, res) => {
   res.json({ success: true });
 });
 
-// Vite middleware in dev or static in prod
+// --- PRODUCTS API (PERMANENT & MULTI-DEVICE) ---
+app.get('/api/products', (req, res) => {
+  res.json(readProducts());
+});
+
+app.post('/api/products', (req, res) => {
+  const newProduct = req.body;
+  if (!newProduct || !newProduct.id) {
+    return res.status(400).json({ error: 'Producto inválido' });
+  }
+  const products = readProducts();
+  const idx = products.findIndex((p: any) => p.id === newProduct.id);
+  if (idx > -1) {
+    products[idx] = newProduct;
+  } else {
+    products.unshift(newProduct);
+  }
+  writeProducts(products);
+  res.status(201).json(newProduct);
+});
+
+app.put('/api/products/:id', (req, res) => {
+  const { id } = req.params;
+  const updatedProduct = req.body;
+  const products = readProducts();
+  const idx = products.findIndex((p: any) => p.id === id);
+  if (idx === -1) {
+    products.unshift(updatedProduct);
+  } else {
+    products[idx] = { ...products[idx], ...updatedProduct };
+  }
+  writeProducts(products);
+  res.json(updatedProduct);
+});
+
+app.delete('/api/products/:id', (req, res) => {
+  const { id } = req.params;
+  let products = readProducts();
+  products = products.filter((p: any) => p.id !== id);
+  writeProducts(products);
+  res.json({ success: true });
+});
+
+app.post('/api/products/reset', (req, res) => {
+  writeProducts(INITIAL_PRODUCTS);
+  res.json({ success: true, products: INITIAL_PRODUCTS });
+});
+
+// --- SECTIONS API ---
+app.get('/api/sections', (req, res) => {
+  res.json(readSections());
+});
+
+app.put('/api/sections', (req, res) => {
+  const sections = req.body;
+  if (Array.isArray(sections)) {
+    writeSections(sections);
+    return res.json({ success: true, sections });
+  }
+  res.status(400).json({ error: 'Formato inválido de secciones' });
+});
+
+app.put('/api/sections/:number', (req, res) => {
+  const secNumber = parseInt(req.params.number);
+  const updatedSection = req.body;
+  const sections = readSections();
+  const idx = sections.findIndex((s: any) => s.number === secNumber);
+  if (idx > -1) {
+    sections[idx] = { ...sections[idx], ...updatedSection };
+    writeSections(sections);
+    return res.json(sections[idx]);
+  }
+  sections.push(updatedSection);
+  writeSections(sections);
+  res.json(updatedSection);
+});
+
+app.post('/api/sections/reset', (req, res) => {
+  writeSections(MENU_SECTIONS);
+  res.json({ success: true, sections: MENU_SECTIONS });
+});
+
+// --- INFO API ---
+app.get('/api/info', (req, res) => {
+  res.json(readInfo());
+});
+
+app.put('/api/info', (req, res) => {
+  const info = req.body;
+  writeInfo(info);
+  res.json(info);
+});
+
+// ==================== VITE MIDDLEWARE / STATIC ====================
 async function startServer() {
   if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, 'dist')));

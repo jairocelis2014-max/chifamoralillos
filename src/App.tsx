@@ -135,25 +135,67 @@ export default function App() {
   const [isServerConnected, setIsServerConnected] = useState(true);
   const [lastSyncTime, setLastSyncTime] = useState<Date>(new Date());
 
-  const fetchServerOrders = async () => {
+  const fetchServerData = async () => {
     try {
-      const res = await fetch('/api/orders');
-      if (res.ok) {
-        const serverOrders = await res.json();
+      // 1. Sync Orders
+      const ordersRes = await fetch('/api/orders');
+      if (ordersRes.ok) {
+        const serverOrders = await ordersRes.json();
         if (Array.isArray(serverOrders) && serverOrders.length > 0) {
           setOrders(serverOrders);
-          setIsServerConnected(true);
-          setLastSyncTime(new Date());
         }
       }
+
+      // 2. Sync Products (Authoritative server data)
+      const prodsRes = await fetch('/api/products');
+      if (prodsRes.ok) {
+        const serverProds = await prodsRes.json();
+        if (Array.isArray(serverProds) && serverProds.length > 0) {
+          setProducts(serverProds);
+          try {
+            localStorage.setItem('chifa_products_v3', JSON.stringify(serverProds));
+          } catch (e) {
+            // ignore localStorage quota error as server is authoritative
+          }
+        }
+      }
+
+      // 3. Sync Sections
+      const secRes = await fetch('/api/sections');
+      if (secRes.ok) {
+        const serverSecs = await secRes.json();
+        if (Array.isArray(serverSecs) && serverSecs.length > 0) {
+          setSections(serverSecs);
+          try {
+            localStorage.setItem('chifa_sections_v2', JSON.stringify(serverSecs));
+          } catch (e) {}
+        }
+      }
+
+      // 4. Sync Info
+      const infoRes = await fetch('/api/info');
+      if (infoRes.ok) {
+        const serverInfo = await infoRes.json();
+        if (serverInfo && serverInfo.name) {
+          setChifaInfo(serverInfo);
+          try {
+            localStorage.setItem('chifa_info_v2', JSON.stringify(serverInfo));
+          } catch (e) {}
+        }
+      }
+
+      setIsServerConnected(true);
+      setLastSyncTime(new Date());
     } catch (err) {
       console.warn('Backend server poll check:', err);
     }
   };
 
+  const fetchServerOrders = fetchServerData;
+
   useEffect(() => {
-    fetchServerOrders();
-    const interval = setInterval(fetchServerOrders, 4000);
+    fetchServerData();
+    const interval = setInterval(fetchServerData, 4000);
     return () => clearInterval(interval);
   }, []);
 
@@ -432,52 +474,134 @@ export default function App() {
     }
   };
 
-  const handleUpdateProduct = (updated: MenuItem) => {
+  const handleUpdateProduct = async (updated: MenuItem) => {
     setProducts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
-  };
-
-  const handleAddProduct = (newProd: MenuItem) => {
-    setProducts((prev) => [newProd, ...prev]);
-  };
-
-  const handleDeleteProduct = (productId: string) => {
-    setProducts((prev) => prev.filter((p) => p.id !== productId));
-  };
-
-  const handleResetProducts = () => {
-    if (window.confirm('¿Deseas restablecer todos los platos a los valores originales del menú PDF?')) {
-      setProducts(INITIAL_PRODUCTS);
-      localStorage.removeItem('chifa_products_v3');
+    try {
+      await fetch(`/api/products/${encodeURIComponent(updated.id)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      });
+    } catch (e) {
+      console.warn('Error saving product update to server:', e);
     }
   };
 
-  const handleUpdateSectionImage = (sectionNumber: number, imageUrl: string) => {
+  const handleAddProduct = async (newProd: MenuItem) => {
+    setProducts((prev) => [newProd, ...prev]);
+    try {
+      await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newProd),
+      });
+    } catch (e) {
+      console.warn('Error adding product to server:', e);
+    }
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    setProducts((prev) => prev.filter((p) => p.id !== productId));
+    try {
+      await fetch(`/api/products/${encodeURIComponent(productId)}`, {
+        method: 'DELETE',
+      });
+    } catch (e) {
+      console.warn('Error deleting product from server:', e);
+    }
+  };
+
+  const handleResetProducts = async () => {
+    if (window.confirm('¿Deseas restablecer todos los platos a los valores originales del menú PDF?')) {
+      setProducts(INITIAL_PRODUCTS);
+      localStorage.removeItem('chifa_products_v3');
+      try {
+        await fetch('/api/products/reset', { method: 'POST' });
+      } catch (e) {
+        console.warn('Error resetting products on server:', e);
+      }
+    }
+  };
+
+  const handleUpdateSectionImage = async (sectionNumber: number, imageUrl: string) => {
     setSections((prev) =>
       prev.map((s) => (s.number === sectionNumber ? { ...s, image: imageUrl } : s))
     );
+    try {
+      await fetch(`/api/sections/${sectionNumber}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: imageUrl }),
+      });
+    } catch (e) {
+      console.warn('Error updating section image on server:', e);
+    }
   };
 
-  const handleUpdateSection = (updatedSection: MenuSection) => {
+  const handleUpdateSection = async (updatedSection: MenuSection) => {
     setSections((prev) =>
       prev.map((s) => (s.number === updatedSection.number ? updatedSection : s))
     );
+    try {
+      await fetch(`/api/sections/${updatedSection.number}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedSection),
+      });
+    } catch (e) {
+      console.warn('Error updating section on server:', e);
+    }
   };
 
-  const handleAddSection = (newSection: MenuSection) => {
-    setSections((prev) => [...prev, newSection]);
+  const handleAddSection = async (newSection: MenuSection) => {
+    const updated = [...sections, newSection];
+    setSections(updated);
+    try {
+      await fetch('/api/sections', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      });
+    } catch (e) {
+      console.warn('Error adding section on server:', e);
+    }
   };
 
-  const handleDeleteSection = (sectionNumber: number) => {
-    setSections((prev) => prev.filter((s) => s.number !== sectionNumber));
+  const handleDeleteSection = async (sectionNumber: number) => {
+    const updated = sections.filter((s) => s.number !== sectionNumber);
+    setSections(updated);
+    try {
+      await fetch('/api/sections', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      });
+    } catch (e) {
+      console.warn('Error deleting section from server:', e);
+    }
   };
 
-  const handleResetSections = () => {
+  const handleResetSections = async () => {
     setSections(MENU_SECTIONS);
     localStorage.removeItem('chifa_sections_v2');
+    try {
+      await fetch('/api/sections/reset', { method: 'POST' });
+    } catch (e) {
+      console.warn('Error resetting sections on server:', e);
+    }
   };
 
-  const handleUpdateChifaInfo = (newInfo: typeof CHIFA_INFO) => {
+  const handleUpdateChifaInfo = async (newInfo: typeof CHIFA_INFO) => {
     setChifaInfo(newInfo);
+    try {
+      await fetch('/api/info', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newInfo),
+      });
+    } catch (e) {
+      console.warn('Error updating chifa info on server:', e);
+    }
   };
 
   const scrollToMenu = () => {
@@ -1037,7 +1161,7 @@ export default function App() {
         chifaInfo={chifaInfo}
         onUpdateChifaInfo={handleUpdateChifaInfo}
         onAddOrder={handleAddManualOrder}
-        onRefreshOrders={fetchServerOrders}
+        onRefreshOrders={fetchServerData}
         isServerConnected={isServerConnected}
         lastSyncTime={lastSyncTime}
       />

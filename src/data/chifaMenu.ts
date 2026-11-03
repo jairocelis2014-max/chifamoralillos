@@ -40,7 +40,7 @@ export const CHIFA_INFO = {
   yapePlinNumber: "941 428 121",
   paymentHolder: "CHIFA MORALILLOS",
   storeFrontImage: "/assets/aistudio/chifa_moralillos_d7504174.jpg",
-  logoImage: "/assets/aistudio/logotipo_png_f69f09a6.png",
+  logoImage: "/uploads/logotipo chifa.jpg",
   promoBannerImage: "/assets/aistudio/DIRECCION_TELEFONO_187ea26c.jpg",
   socials: {
     facebook: "https://web.facebook.com/profile.php?id=100027272124879",
@@ -146,7 +146,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Entradas",
     price: 7.00,
     description: "Media docena de huevitos de codorniz cocidos a punto con salsa especial de soya.",
-    image: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Huevo de codorniz (media Doc.).jpg"
   },
   {
     id: "E-WANTAN-MED",
@@ -157,7 +157,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 8.00,
     popular: true,
     description: "6 piezas de crocantes wantanes dorados al wok con abundante relleno y salsa tamarindo agridulce.",
-    image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Wantán frito (media Doc.).jpg"
   },
   {
     id: "E-WANTAN-DOC",
@@ -168,7 +168,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 13.00,
     popular: true,
     description: "12 piezas de crocantes wantanes dorados de la casa con salsa tamarindo dulce.",
-    image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Wantán frito (1 Doc.).jpg"
   },
   {
     id: "E-LANGOST-DOR",
@@ -178,7 +178,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Entradas",
     price: 30.00,
     description: "Crujientes langostinos apanados y dorados con toque de especias orientales y limón.",
-    image: "https://images.unsplash.com/photo-1559742811-822863c46f83?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Langostinos dorados.jpg"
   },
   {
     id: "E-CHICHARRON-POLLO",
@@ -189,7 +189,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 22.00,
     popular: true,
     description: "Jugosos trozos de pechuga de pollo marinados en kion, sillao y limón, dorados y crocantes.",
-    image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Chicharrón de pollo con limón.jpg"
   },
   {
     id: "E-CHAMPINONES",
@@ -199,7 +199,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Entradas",
     price: 20.00,
     description: "Tiernos champiñones salteados al fuego con toque de salsa oriental.",
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Champiñones fritos.jpg"
   },
   {
     id: "E-ALITAS-LIMON",
@@ -209,7 +209,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Entradas",
     price: 21.00,
     description: "Alitas de pollo marinadas con toques cítricos y fritas al estilo chifa.",
-    image: "https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Alitas fritas con limón.jpg"
   },
   {
     id: "E-CHICHARRON-CHINO",
@@ -219,7 +219,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Entradas",
     price: 23.00,
     description: "Panceta de cerdo glaseada y crujiente marinada en cinco especias chinas.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Chicharrón chino.jpg"
   },
   {
     id: "E-SIUMAY-POLLO",
@@ -230,7 +230,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 20.00,
     popular: true,
     description: "6 tradicionales bocaditos dim sum al vapor rellenos de jugoso pollo sazonado con cebollita y kion.",
-    image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Siumay de pollo (media Doc.).jpg"
   },
   {
     id: "E-SIUMAY-LANG",
@@ -240,7 +240,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Entradas",
     price: 21.00,
     description: "6 bocaditos al vapor rellenos de langostinos frescos y especias finas orientales.",
-    image: "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Siumay de langostinos (media Doc.).jpg"
   },
   {
     id: "E-SIUCAO-FRITO",
@@ -250,7 +250,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Entradas",
     price: 31.00,
     description: "Empanaditas chinas fritas rellenas de langostinos enteros sazonados.",
-    image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Siucao frito de langostinos.jpg"
   },
   {
     id: "E-NABO-CURTIDO",
@@ -260,7 +260,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Entradas",
     price: 15.00,
     description: "Nabo japonés encurtido agridulce, ideal para acompañar carnes y arroces.",
-    image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Nabo curtido.jpg"
   },
   {
     id: "E-WANTAN-ESP",
@@ -270,7 +270,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Entradas",
     price: 17.00,
     description: "Wantanes especiales rellenos de carne y langostinos finamente picados.",
-    image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Wantán frito especial (media Doc.).jpg"
   },
 
   // Postres
@@ -282,7 +282,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Postres",
     price: 9.00,
     description: "Dulce tradicional de mandarinas o kumquats glaseados en almíbar oriental.",
-    image: "https://images.unsplash.com/photo-1557800636-894a64c1696f?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Naranjita china (media Doc.).jpg"
   },
   {
     id: "POSTRE-LYCHESS",
@@ -292,7 +292,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Postres",
     price: 15.00,
     description: "Refrescante porción de lichis chinos en suave almíbar dulce y aromático.",
-    image: "https://images.unsplash.com/photo-1546548970-71785318a17b?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Lychess (chirimoya china).jpg"
   },
 
   // Caldos
@@ -304,7 +304,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Caldos",
     price: 19.00,
     description: "Sustancioso y reconfortante caldo casero de pechuga de pollo aromatizado con kion fresco.",
-    image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/E1 Caldo de pollo con kion.jpg"
   },
   {
     id: "E2",
@@ -314,7 +314,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Caldos",
     price: 19.00,
     description: "Caldo claro de pollo con col china, pacchoy y verduras frescas al dente.",
-    image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/E2 Caldo de pollo con verdura.jpg"
   },
   {
     id: "E3",
@@ -324,7 +324,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Caldos",
     price: 20.00,
     description: "Nutritivo caldo con delicados fideos de arroz chinos (fan si) y trozos de pollo.",
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/E3 Caldo de pollo con fideo chino.jpg"
   },
   {
     id: "E4",
@@ -334,7 +334,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Caldos",
     price: 19.00,
     description: "Caldo caliente con fideos de huevo y trozos de pollo tierno con cebollita china.",
-    image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/E4 Caldo de pollo con tallarines.jpg"
   },
 
   // Sopas
@@ -347,7 +347,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 21.00,
     popular: true,
     description: "La reina de los chifas: caldo dorado con wantanes rellenos, verduras frescas, pollo y aceite de ajonjolí.",
-    image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/E5 Sopa wantán de pollo.jpg"
   },
   {
     id: "E6",
@@ -358,7 +358,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 23.00,
     popular: true,
     description: "Sopa wantán enriquecida con pollo, chancho asado, langostinos, huevito de codorniz y wantanes.",
-    image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/E6 Sopa wantán especial.jpg"
   },
   {
     id: "E7",
@@ -368,7 +368,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Sopas",
     price: 23.00,
     description: "Exquisita sopa con fideos delgados chinos al vapor, combinación de tres carnes y caldo concentrado.",
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/E7 Sopa womin especial.jpg"
   },
   {
     id: "E8",
@@ -378,7 +378,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Sopas",
     price: 21.00,
     description: "Sopa espesita reconfortante con hilos de clara de huevo batida, pollo deshilachado y kion.",
-    image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/E8 Sopa fuchifu.jpg"
   },
   {
     id: "E9",
@@ -388,7 +388,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Sopas",
     price: 24.00,
     description: "Sopa tradicional con col china, trozos selectos de pato y carnes en caldo perfumado.",
-    image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/E9 Sopa pac pow.jpg"
   },
   {
     id: "E10",
@@ -399,7 +399,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 41.00,
     servings: "Familiar (3-4 personas)",
     description: "Tazón grande familiar con abundantes wantanes, pechuga de pollo y verduras para compartir en la mesa.",
-    image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/E10 Sopa wantán de pollo familiar.jpg"
   },
   {
     id: "E11",
@@ -410,7 +410,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 46.00,
     servings: "Familiar (3-4 personas)",
     description: "Gran tazón familiar con wantanes, langostinos, chancho asado, pollo y huevitos de codorniz.",
-    image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/E11 Sopa wantán especial familiar.jpg"
   },
   {
     id: "E12",
@@ -420,7 +420,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Sopas",
     price: 25.00,
     description: "Langostinos frescos en caldo translúcido aromatizado con kion y fideos de frijol chino.",
-    image: "https://images.unsplash.com/photo-1559742811-822863c46f83?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/E12 Sopa de langostinos con fideo chino.jpg"
   },
   {
     id: "E13",
@@ -431,7 +431,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 26.00,
     popular: true,
     description: "La creación especial del chef de Chifa Moralillos con surtido selecto de carnes y mariscos.",
-    image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/E13 Sopa de la casa.jpg"
   },
   {
     id: "E14",
@@ -441,7 +441,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Sopas",
     price: 21.00,
     description: "Sopa oriental con pasta de ajonjolí tostado, carne picadita y un sutil toque picante.",
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/E14 Sopa tan tan.jpg"
   },
   {
     id: "E15",
@@ -451,7 +451,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Sopas",
     price: 26.00,
     description: "Empanaditas chinas siucao hervidas al dente con langostinos en caldo aromático de pollo y kion.",
-    image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/E15 Sopa siucao con langostino.jpg"
   },
 
   // ================= 2. CHAUFA Y TALLARINES =================
