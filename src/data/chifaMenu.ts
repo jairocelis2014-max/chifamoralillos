@@ -209,7 +209,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Entradas",
     price: 21.00,
     description: "Alitas de pollo marinadas con toques cítricos y fritas al estilo chifa.",
-    image: "/assets/aistudio/Alitas con limon.jpg",
+    image: "/uploads/Alitas con limon.jpg",
   },
   {
     id: "E-CHICHARRON-CHINO",
