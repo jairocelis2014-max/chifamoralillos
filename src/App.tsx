@@ -89,11 +89,27 @@ const INITIAL_DEMO_ORDERS: Order[] = [
 ];
 
 export default function App() {
-  // Products state (persisted)
+  // Products state (persisted with smart auto-upgrade for new photos)
   const [products, setProducts] = useState<MenuItem[]>(() => {
     try {
-      const saved = localStorage.getItem('chifa_products_v3');
-      if (saved) return JSON.parse(saved);
+      const saved = localStorage.getItem('chifa_products_v4') || localStorage.getItem('chifa_products_v3');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Merge with INITIAL_PRODUCTS to ensure any dishes with uploaded photos get upgraded
+          return INITIAL_PRODUCTS.map((init) => {
+            const stored = parsed.find((p: MenuItem) => p.id === init.id);
+            if (!stored) return init;
+            const isUnsplash = stored.image && stored.image.includes('images.unsplash.com');
+            const hasUpload = init.image && init.image.startsWith('/uploads/');
+            return {
+              ...init,
+              ...stored,
+              image: (isUnsplash && hasUpload) ? init.image : (stored.image || init.image)
+            };
+          });
+        }
+      }
     } catch (e) {
       console.error(e);
     }
@@ -244,6 +260,7 @@ export default function App() {
   // Sync products to localStorage
   useEffect(() => {
     try {
+      localStorage.setItem('chifa_products_v4', JSON.stringify(products));
       localStorage.setItem('chifa_products_v3', JSON.stringify(products));
     } catch (e) {
       console.error(e);

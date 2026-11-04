@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { X, Plus, Minus, ShoppingBag, Flame, Sparkles, Check, ChevronRight, ChevronLeft } from 'lucide-react';
 import { MenuItem, MenuSection, MENU_SECTIONS } from '../data/chifaMenu';
 import { CartItem } from '../types';
+import { resolveImageUrl, handleDishImageError } from '../utils/imageUrl';
 
 interface DishDetailModalProps {
   dish: MenuItem | null;
@@ -104,13 +105,10 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({
           {/* Dish Image */}
           <div className="relative h-48 sm:h-56 rounded-2xl overflow-hidden bg-black border border-gray-800 shadow-inner">
             <img
-              src={dish.image}
+              src={resolveImageUrl(dish.image)}
               alt={dish.name}
               className="w-full h-full object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src =
-                  'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=600&q=80';
-              }}
+              onError={handleDishImageError}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#181214] via-transparent to-transparent opacity-80" />
             <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">

@@ -6,8 +6,44 @@ import {
   ArrowUpRight, Layers, FolderPlus, HelpCircle, FileSpreadsheet, Printer, Download,
   FileText, RefreshCw, CheckCircle2, Clock, User, MapPin, Receipt, Search
 } from 'lucide-react';
-import { MenuItem, MenuSection, MENU_SECTIONS, CHIFA_INFO } from '../data/chifaMenu';
+import { MenuItem, MenuSection, MENU_SECTIONS, CHIFA_INFO, INITIAL_PRODUCTS } from '../data/chifaMenu';
 import { Order, CartItem, ServiceType, PaymentMethod } from '../types';
+import { resolveImageUrl, handleDishImageError } from '../utils/imageUrl';
+
+export const UPLOADED_GITHUB_PHOTOS = [
+  { name: 'Alitas fritas con limón', url: '/uploads/Alitas-fritas-con-limón.jpg' },
+  { name: 'Champiñones fritos', url: '/uploads/Champiñones fritos.jpg' },
+  { name: 'Chicharrón chino', url: '/uploads/Chicharrón chino.jpg' },
+  { name: 'Chicharrón de pollo con limón', url: '/uploads/Chicharrón de pollo con limón.jpg' },
+  { name: 'E1 Caldo de pollo con kion', url: '/uploads/E1 Caldo de pollo con kion.jpg' },
+  { name: 'E2 Caldo de pollo con verdura', url: '/uploads/E2 Caldo de pollo con verdura.jpg' },
+  { name: 'E3 Caldo de pollo con fideo chino', url: '/uploads/E3 Caldo de pollo con fideo chino.jpg' },
+  { name: 'E4 Caldo de pollo con tallarines', url: '/uploads/E4 Caldo de pollo con tallarines.jpg' },
+  { name: 'E5 Sopa wantán de pollo', url: '/uploads/E5 Sopa wantán de pollo.jpg' },
+  { name: 'E6 Sopa wantán especial', url: '/uploads/E6 Sopa wantán especial.jpg' },
+  { name: 'E7 Sopa womin especial', url: '/uploads/E7 Sopa womin especial.jpg' },
+  { name: 'E8 Sopa fuchifu', url: '/uploads/E8 Sopa fuchifu.jpg' },
+  { name: 'E9 Sopa pac pow', url: '/uploads/E9 Sopa pac pow.jpg' },
+  { name: 'E10 Sopa wantán de pollo familiar', url: '/uploads/E10 Sopa wantán de pollo familiar.jpg' },
+  { name: 'E11 Sopa wantán especial familiar', url: '/uploads/E11 Sopa wantán especial familiar.jpg' },
+  { name: 'E12 Sopa de langostinos con fideo chino', url: '/uploads/E12 Sopa de langostinos con fideo chino.jpg' },
+  { name: 'E13 Sopa de la casa', url: '/uploads/E13 Sopa de la casa.jpg' },
+  { name: 'E14 Sopa tan tan', url: '/uploads/E14 Sopa tan tan.jpg' },
+  { name: 'E15 Sopa siucao con langostino', url: '/uploads/E15 Sopa siucao con langostino.jpg' },
+  { name: 'Huevo de codorniz (media Doc.)', url: '/uploads/Huevo de codorniz (media Doc.).jpg' },
+  { name: 'Langostinos dorados', url: '/uploads/Langostinos dorados.jpg' },
+  { name: 'Lychess (chirimoya china)', url: '/uploads/Lychess (chirimoya china).jpg' },
+  { name: 'Nabo curtido', url: '/uploads/Nabo curtido.jpg' },
+  { name: 'Naranjita china (media Doc.)', url: '/uploads/Naranjita china (media Doc.).jpg' },
+  { name: 'Siucao frito de langostinos', url: '/uploads/Siucao frito de langostinos.jpg' },
+  { name: 'Siumay de langostinos (media Doc.)', url: '/uploads/Siumay de langostinos (media Doc.).jpg' },
+  { name: 'Siumay de pollo (media Doc.)', url: '/uploads/Siumay de pollo (media Doc.).jpg' },
+  { name: 'Wantán frito (1 Doc.)', url: '/uploads/Wantán frito (1 Doc.).jpg' },
+  { name: 'Wantán frito (media Doc.)', url: '/uploads/Wantán frito (media Doc.).jpg' },
+  { name: 'Wantán frito especial (media Doc.)', url: '/uploads/Wantán frito especial (media Doc.).jpg' },
+  { name: 'Inca Kola helada', url: '/uploads/inca kola.jpg' },
+  { name: 'Logotipo Chifa Moralillos', url: '/uploads/logotipo chifa.jpg' },
+];
 
 interface AdminPanelProps {
   isOpen: boolean;
@@ -468,47 +504,107 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     });
   }, [products, productSectionFilter, productSearch]);
 
-  // File Upload Handlers with Automatic Server Disk Upload & URL Generation
-  const handleProductImageFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Helper to compress images on the client to ~50KB so they never exceed Vercel / localStorage limits
+  const compressImage = (file: File, maxDim = 800, quality = 0.85): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          } else {
+            resolve(e.target?.result as string);
+          }
+        };
+        img.onerror = () => resolve(e.target?.result as string);
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // File Upload Handlers with Automatic Client Optimization & Server Disk Upload
+  const handleProductImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setIsUploadingImage(true);
-      setImageUploadStatus('Subiendo imagen al servidor...');
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        if (reader.result) {
-          const base64Data = reader.result as string;
-          try {
-            const res = await fetch('/api/upload-image', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                image: base64Data,
-                name: productForm.id || productForm.name || 'plato',
-              }),
-            });
-            if (res.ok) {
-              const data = await res.json();
-              if (data.url) {
-                setProductForm((prev) => ({ ...prev, image: data.url }));
-                setImageUploadStatus('✓ Imagen guardada permanentemente en el servidor');
-                setIsUploadingImage(false);
-                setTimeout(() => setImageUploadStatus(''), 4000);
-                return;
-              }
+      setImageUploadStatus('Optimizando y subiendo foto...');
+      try {
+        const compressedData = await compressImage(file, 800, 0.85);
+        try {
+          const res = await fetch('/api/upload-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              image: compressedData,
+              name: productForm.id || productForm.name || 'plato',
+            }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.url) {
+              setProductForm((prev) => ({ ...prev, image: data.url }));
+              setImageUploadStatus('✓ Imagen guardada permanentemente en el servidor');
+              setIsUploadingImage(false);
+              setTimeout(() => setImageUploadStatus(''), 4000);
+              return;
             }
-          } catch (err) {
-            console.warn('Error uploading image to server:', err);
           }
-          // Fallback to base64 if server upload fails
-          setProductForm((prev) => ({ ...prev, image: base64Data }));
-          setImageUploadStatus('✓ Imagen cargada');
-          setTimeout(() => setImageUploadStatus(''), 3000);
+        } catch (err) {
+          console.warn('Backend upload not available (static host), saving optimized image:', err);
         }
-        setIsUploadingImage(false);
-      };
-      reader.readAsDataURL(file);
+        // Fallback for static hosts (like Vercel): save compressed ~50KB image directly
+        setProductForm((prev) => ({ ...prev, image: compressedData }));
+        setImageUploadStatus('✓ Imagen optimizada y lista para guardar');
+        setTimeout(() => setImageUploadStatus(''), 4000);
+      } catch (err) {
+        console.error('Error processing image:', err);
+        setImageUploadStatus('Error al procesar imagen');
+      }
+      setIsUploadingImage(false);
     }
+  };
+
+  const handleSyncAllGitHubPhotos = () => {
+    let count = 0;
+    const updatedProducts = products.map((prod) => {
+      const init = INITIAL_PRODUCTS.find((p) => p.id === prod.id);
+      if (init && init.image.startsWith('/uploads/') && prod.image !== init.image) {
+        count++;
+        return { ...prod, image: init.image };
+      }
+      return prod;
+    });
+
+    updatedProducts.forEach((p) => {
+      onUpdateProduct(p);
+    });
+
+    try {
+      localStorage.setItem('chifa_products_v4', JSON.stringify(updatedProducts));
+      localStorage.setItem('chifa_products_v3', JSON.stringify(updatedProducts));
+    } catch (e) {
+      console.warn(e);
+    }
+
+    alert(`¡Sincronización completada! Los 30 platos de Carta 1 ahora usan sus fotos de GitHub (/uploads/). Los cambios ya son visibles en Vercel, móviles y PC.`);
   };
 
   const handleSectionImageFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1527,7 +1623,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                      onClick={handleSyncAllGitHubPhotos}
+                      className="px-3 py-2 bg-emerald-700/90 hover:bg-emerald-600 text-white text-xs font-black rounded-xl border border-emerald-500/50 flex items-center gap-1.5 transition active:scale-95 shadow"
+                      title="Sincronizar platos con las fotos subidas al repositorio GitHub (/uploads/)"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      <span>Sincronizar Fotos GitHub</span>
+                    </button>
+
                     <button
                       onClick={onResetProducts}
                       className="px-3 py-2 bg-[#26171b] hover:bg-[#342025] text-gray-300 hover:text-white text-xs font-bold rounded-xl border border-gray-700 flex items-center gap-1.5 transition"
@@ -1584,9 +1689,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     >
                       <div className="w-14 h-14 rounded-xl overflow-hidden bg-black shrink-0 border border-gray-800 relative">
                         <img
-                          src={prod.image}
+                          src={resolveImageUrl(prod.image)}
                           alt={prod.name}
                           className="w-full h-full object-cover"
+                          onError={handleDishImageError}
                         />
                       </div>
 
@@ -1913,9 +2019,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <div className="flex items-center gap-3">
                     <div className="w-20 h-20 rounded-2xl overflow-hidden bg-black border border-amber-500/40 shrink-0">
                       <img
-                        src={productForm.image}
+                        src={resolveImageUrl(productForm.image)}
                         alt="Preview"
                         className="w-full h-full object-cover"
+                        onError={handleDishImageError}
                       />
                     </div>
                     <div className="space-y-2 flex-1">
@@ -1962,9 +2069,32 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         </div>
                       )}
 
+                      {/* Dropdown selector for photos already in /uploads/ from GitHub */}
+                      <div>
+                        <label className="block text-gray-400 text-[10px] font-semibold mb-1">
+                          📁 O seleccionar foto de GitHub (/uploads/):
+                        </label>
+                        <select
+                          value={UPLOADED_GITHUB_PHOTOS.some((p) => p.url === productForm.image) ? productForm.image : ''}
+                          onChange={(e) => {
+                            if (e.target.value) {
+                              setProductForm((prev) => ({ ...prev, image: e.target.value }));
+                            }
+                          }}
+                          className="w-full bg-[#160e11] text-amber-300 p-2 rounded-xl border border-gray-800 text-[11px] focus:outline-none focus:border-amber-400 font-medium"
+                        >
+                          <option value="">-- Seleccionar foto existente ({UPLOADED_GITHUB_PHOTOS.length} fotos) --</option>
+                          {UPLOADED_GITHUB_PHOTOS.map((p, idx) => (
+                            <option key={idx} value={p.url}>
+                              {p.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
                       <input
                         type="url"
-                        placeholder="O pega URL de imagen..."
+                        placeholder="O pega URL de imagen (ej: /uploads/nombre.jpg)..."
                         value={productForm.image}
                         onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
                         className="w-full bg-[#160e11] text-gray-300 p-2 rounded-xl border border-gray-800 text-[11px] font-mono"

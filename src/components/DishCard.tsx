@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plus, Flame, Star, Users, Check } from 'lucide-react';
 import { MenuItem } from '../data/chifaMenu';
+import { resolveImageUrl, handleDishImageError } from '../utils/imageUrl';
 
 interface DishCardProps {
   dish: MenuItem;
@@ -24,14 +25,11 @@ export const DishCard: React.FC<DishCardProps> = ({
           className="relative h-44 sm:h-48 overflow-hidden bg-black cursor-pointer"
         >
           <img
-            src={dish.image}
+            src={resolveImageUrl(dish.image)}
             alt={dish.name}
             className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 ease-out"
             loading="lazy"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src =
-                'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=600&q=80';
-            }}
+            onError={handleDishImageError}
           />
           {/* Subtle gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#171113] via-transparent to-black/30" />
