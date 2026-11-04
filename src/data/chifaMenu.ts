@@ -2194,7 +2194,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Gaseosas",
     price: 2.50,
     description: "Inca Kola personal de vidrio bien helada.",
-    image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/inca kola.jpg"
   },
   {
     id: "GAS-CC-296",
@@ -2225,7 +2225,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 5.00,
     popular: true,
     description: "Inca Kola botella personal 600 ml helada.",
-    image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/inca kola.jpg"
   },
   {
     id: "GAS-CC-600",
@@ -2277,7 +2277,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 6.00,
     popular: true,
     description: "Botella gordita de vidrio de Inca Kola bien fría.",
-    image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/inca kola.jpg"
   },
   {
     id: "GAS-IK-1L",
@@ -2287,7 +2287,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Gaseosas",
     price: 10.00,
     description: "Botella de Inca Kola de 1 Litro.",
-    image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/inca kola.jpg"
   },
   {
     id: "GAS-CC-1L",
@@ -2308,7 +2308,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 12.00,
     popular: true,
     description: "Botella de Inca Kola familiar de 1.5 Litros.",
-    image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/inca kola.jpg"
   },
   {
     id: "GAS-CC-15L",
@@ -2330,7 +2330,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 15.00,
     popular: true,
     description: "Botella grande de Inca Kola de 2.5 Litros.",
-    image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/inca kola.jpg"
   },
   {
     id: "GAS-CC-25L",

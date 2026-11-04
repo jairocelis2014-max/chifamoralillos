@@ -600,6 +600,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     });
 
     try {
+      localStorage.setItem('chifa_products_v5', JSON.stringify(updatedProducts));
       localStorage.setItem('chifa_products_v4', JSON.stringify(updatedProducts));
       localStorage.setItem('chifa_products_v3', JSON.stringify(updatedProducts));
     } catch (e) {

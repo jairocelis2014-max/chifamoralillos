@@ -92,7 +92,7 @@ export default function App() {
   // Products state (persisted with smart auto-upgrade for new photos)
   const [products, setProducts] = useState<MenuItem[]>(() => {
     try {
-      const saved = localStorage.getItem('chifa_products_v4') || localStorage.getItem('chifa_products_v3');
+      const saved = localStorage.getItem('chifa_products_v5') || localStorage.getItem('chifa_products_v4') || localStorage.getItem('chifa_products_v3');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -102,10 +102,20 @@ export default function App() {
             if (!stored) return init;
             const isUnsplash = stored.image && stored.image.includes('images.unsplash.com');
             const hasUpload = init.image && init.image.startsWith('/uploads/');
+            const isIncaKola = init.id.startsWith('GAS-IK');
+            const storedIsCocaCola = stored.image && (stored.image.includes('photo-1622483767028') || isUnsplash);
+
+            let finalImage = stored.image || init.image;
+            if (isIncaKola && (storedIsCocaCola || hasUpload)) {
+              finalImage = init.image; // Use official /uploads/inca kola.jpg
+            } else if (isUnsplash && hasUpload) {
+              finalImage = init.image;
+            }
+
             return {
               ...init,
               ...stored,
-              image: (isUnsplash && hasUpload) ? init.image : (stored.image || init.image)
+              image: finalImage
             };
           });
         }
@@ -260,6 +270,7 @@ export default function App() {
   // Sync products to localStorage
   useEffect(() => {
     try {
+      localStorage.setItem('chifa_products_v5', JSON.stringify(products));
       localStorage.setItem('chifa_products_v4', JSON.stringify(products));
       localStorage.setItem('chifa_products_v3', JSON.stringify(products));
     } catch (e) {
