@@ -19,13 +19,18 @@ export function resolveImageUrl(url: string | undefined): string {
     cleanUrl = '/' + cleanUrl;
   }
 
-  return cleanUrl;
+  // Encode special characters like spaces, accents, and parentheses for safe Vercel and CDN URL fetching
+  try {
+    return encodeURI(decodeURI(cleanUrl));
+  } catch (e) {
+    return cleanUrl;
+  }
 }
 
 /**
  * Handles image loading errors on <img> tags.
- * If a URL like /uploads/Alitas fritas con limón.jpg fails, tries /uploads/Alitas-fritas-con-limón.jpg
- * or encoded URI. If all fail, sets a reliable Chifa dish fallback.
+ * If a URL like /uploads/Langostinos%20dorados.jpg fails, tries hyphens, spaces, or aliases.
+ * If all fail, sets a reliable high quality Chifa dish fallback.
  */
 export function handleDishImageError(e: React.SyntheticEvent<HTMLImageElement, Event>) {
   const img = e.currentTarget;
@@ -40,10 +45,19 @@ export function handleDishImageError(e: React.SyntheticEvent<HTMLImageElement, E
       img.src = currentSrc.replace(/%20/g, '-').replace(/ /g, '-');
       return;
     }
-    // If it has hyphens, try spaces
+    // If it has hyphens, try spaces with %20
     if (currentSrc.includes('-')) {
       img.src = currentSrc.replace(/-/g, '%20');
       return;
+    }
+  } else if (retries === 1) {
+    img.dataset.retry = '2';
+    // Try decoded raw URL
+    try {
+      img.src = decodeURI(currentSrc);
+      return;
+    } catch {
+      // ignore
     }
   }
 

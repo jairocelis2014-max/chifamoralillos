@@ -582,6 +582,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     }
   };
 
+  const [syncNotice, setSyncNotice] = useState<string>('');
+
   const handleSyncAllGitHubPhotos = () => {
     let count = 0;
     const updatedProducts = products.map((prod) => {
@@ -604,7 +606,66 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       console.warn(e);
     }
 
-    alert(`¡Sincronización completada! Los 30 platos de Carta 1 ahora usan sus fotos de GitHub (/uploads/). Los cambios ya son visibles en Vercel, móviles y PC.`);
+    setSyncNotice('✓ ¡Sincronización completada! Los platos ahora usan las fotos oficiales de /uploads/ en este navegador y Vercel.');
+    setTimeout(() => setSyncNotice(''), 6000);
+  };
+
+  const handleDownloadChifaMenuFile = () => {
+    const fileHeader = `// CHIFA MORALILLOS - MENÚ ACTUALIZADO
+// Generado automáticamente desde el Panel de Administración de Chifa Moralillos
+
+export interface MenuItem {
+  id: string;
+  name: string;
+  sectionNumber: number;
+  categoryId: string;
+  subCategory?: string;
+  price: number;
+  takeawayPrice?: number;
+  description: string;
+  image: string;
+  popular?: boolean;
+  spicy?: boolean;
+  servings?: string;
+  includesEntrance?: boolean;
+  available?: boolean;
+}
+
+export interface MenuSection {
+  number: number;
+  id: string;
+  title: string;
+  shortTitle: string;
+  shortName: string;
+  badge?: string;
+  iconName: string;
+  description: string;
+  image: string;
+  subcategories: string[];
+}
+
+export const CHIFA_INFO = ${JSON.stringify(chifaInfo || CHIFA_INFO, null, 2)};
+
+export const MENU_SECTIONS: MenuSection[] = ${JSON.stringify(sections || MENU_SECTIONS, null, 2)};
+
+export const CATEGORIES = MENU_SECTIONS;
+export type CategoryInfo = MenuSection;
+
+export const INITIAL_PRODUCTS: MenuItem[] = ${JSON.stringify(products, null, 2)};
+`;
+
+    const blob = new Blob([fileHeader], { type: 'text/typescript;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'chifaMenu.ts');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setSyncNotice('✓ ¡Archivo chifaMenu.ts descargado con éxito! Súbelo a GitHub (src/data/chifaMenu.ts) para actualizar Vercel de inmediato.');
+    setTimeout(() => setSyncNotice(''), 8000);
   };
 
   const handleSectionImageFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1625,6 +1686,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                   <div className="flex items-center gap-2 flex-wrap">
                     <button
+                      onClick={handleDownloadChifaMenuFile}
+                      className="px-3 py-2 bg-blue-700/90 hover:bg-blue-600 text-white text-xs font-black rounded-xl border border-blue-500/50 flex items-center gap-1.5 transition active:scale-95 shadow"
+                      title="Descargar chifaMenu.ts actualizado con fotos y cambios para subir a GitHub"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Descargar Menú GitHub</span>
+                    </button>
+
+                    <button
                       onClick={handleSyncAllGitHubPhotos}
                       className="px-3 py-2 bg-emerald-700/90 hover:bg-emerald-600 text-white text-xs font-black rounded-xl border border-emerald-500/50 flex items-center gap-1.5 transition active:scale-95 shadow"
                       title="Sincronizar platos con las fotos subidas al repositorio GitHub (/uploads/)"
@@ -1651,6 +1721,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </button>
                   </div>
                 </div>
+
+                {syncNotice && (
+                  <div className="bg-emerald-950/90 border border-emerald-500/80 text-emerald-200 text-xs p-3 rounded-xl flex items-center gap-2 shadow-lg">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span className="font-medium">{syncNotice}</span>
+                  </div>
+                )}
 
                 {/* Filters */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
