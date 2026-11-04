@@ -2089,7 +2089,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = ${JSON.stringify(products, null, 2)}
                 </button>
               </div>
 
-              <form onSubmit={handleSaveProduct} className="space-y-3.5 text-xs">
+              <form onSubmit={handleSaveProduct} noValidate className="space-y-3.5 text-xs">
                 {/* Image Upload Area with live preview */}
                 <div className="space-y-1.5">
                   <label className="block text-gray-300 font-semibold">Foto del Plato:</label>
@@ -2141,7 +2141,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = ${JSON.stringify(products, null, 2)}
                               : 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/80'
                           }`}
                         >
-                          <CheckCircle className="w-3.5 h-3.5" />
+                          <CheckCircle2 className="w-3.5 h-3.5" />
                           <span>{imageUploadStatus}</span>
                         </div>
                       )}
@@ -2170,8 +2170,8 @@ export const INITIAL_PRODUCTS: MenuItem[] = ${JSON.stringify(products, null, 2)}
                       </div>
 
                       <input
-                        type="url"
-                        placeholder="O pega URL de imagen (ej: /uploads/nombre.jpg)..."
+                        type="text"
+                        placeholder="O pega ruta de imagen (ej: /uploads/nombre.jpg)..."
                         value={productForm.image}
                         onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
                         className="w-full bg-[#160e11] text-gray-300 p-2 rounded-xl border border-gray-800 text-[11px] font-mono"
@@ -2315,7 +2315,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = ${JSON.stringify(products, null, 2)}
                 </button>
               </div>
 
-              <form onSubmit={handleSaveSection} className="space-y-3.5 text-xs">
+              <form onSubmit={handleSaveSection} noValidate className="space-y-3.5 text-xs">
                 {/* Image Upload for Section */}
                 <div className="space-y-1.5">
                   <label className="block text-gray-300 font-semibold">Foto de Fondo de la Sección:</label>
@@ -2335,8 +2335,8 @@ export const INITIAL_PRODUCTS: MenuItem[] = ${JSON.stringify(products, null, 2)}
                         className="text-[11px] text-gray-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-500 file:text-black hover:file:bg-amber-400 cursor-pointer"
                       />
                       <input
-                        type="url"
-                        placeholder="O pega URL de imagen..."
+                        type="text"
+                        placeholder="O pega ruta de imagen (ej: /uploads/nombre.jpg)..."
                         value={sectionForm.image}
                         onChange={(e) => setSectionForm({ ...sectionForm, image: e.target.value })}
                         className="w-full bg-[#160e11] text-gray-300 p-2 rounded-xl border border-gray-800 text-[11px] font-mono"
