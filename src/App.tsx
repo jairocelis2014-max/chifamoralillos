@@ -11,7 +11,7 @@ import { AdminPanel } from './components/AdminPanel';
 import { Footer } from './components/Footer';
 import { MobileAppDock } from './components/MobileAppDock';
 import { ContactModal } from './components/ContactModal';
-import { INITIAL_PRODUCTS, MENU_SECTIONS, MenuItem, MenuSection, CHIFA_INFO } from './data/chifaMenu';
+import { INITIAL_PRODUCTS, MENU_SECTIONS, MenuItem, MenuSection, CHIFA_INFO, MENU_VERSION } from './data/chifaMenu';
 import { CartItem, Order } from './types';
 import { ShoppingBag, MessageCircle, Phone, Facebook, ArrowUp, Flame, Star, Sparkles, MapPin, X, ChevronRight, Maximize2, Search } from 'lucide-react';
 
@@ -92,7 +92,15 @@ export default function App() {
   // Products state (persisted with smart auto-upgrade for new photos)
   const [products, setProducts] = useState<MenuItem[]>(() => {
     try {
-      const saved = localStorage.getItem('chifa_products_v5') || localStorage.getItem('chifa_products_v4') || localStorage.getItem('chifa_products_v3');
+      const storedVersion = localStorage.getItem('chifa_menu_version');
+      // If version in code changed (new GitHub deploy / new photos), reload fresh products
+      if (storedVersion !== MENU_VERSION) {
+        localStorage.setItem('chifa_menu_version', MENU_VERSION);
+        localStorage.setItem('chifa_products_v5', JSON.stringify(INITIAL_PRODUCTS));
+        return INITIAL_PRODUCTS;
+      }
+
+      const saved = localStorage.getItem('chifa_products_v5') || localStorage.getItem('chifa_products_v4');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -107,7 +115,7 @@ export default function App() {
 
             let finalImage = stored.image || init.image;
             if (isIncaKola && (storedIsCocaCola || hasUpload)) {
-              finalImage = init.image; // Use official /uploads/inca kola.jpg
+              finalImage = init.image; // Use official /uploads/Inca kola 296 ml.jpg
             } else if (isUnsplash && hasUpload) {
               finalImage = init.image;
             }

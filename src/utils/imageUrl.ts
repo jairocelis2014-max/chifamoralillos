@@ -52,6 +52,36 @@ export function handleDishImageError(e: React.SyntheticEvent<HTMLImageElement, E
     }
   } else if (retries === 1) {
     img.dataset.retry = '2';
+    // Handle double-dot extension ..jpg vs .jpg
+    if (currentSrc.includes('..jpg')) {
+      img.src = currentSrc.replace('..jpg', '.jpg');
+      return;
+    }
+    if (currentSrc.includes('.jpg') && !currentSrc.includes('..jpg')) {
+      img.src = currentSrc.replace('.jpg', '..jpg');
+      return;
+    }
+    // Handle .png vs .jpg
+    if (currentSrc.includes('.png')) {
+      img.src = currentSrc.replace('.png', '.jpg');
+      return;
+    }
+    if (currentSrc.includes('.jpg')) {
+      img.src = currentSrc.replace('.jpg', '.png');
+      return;
+    }
+  } else if (retries === 2) {
+    img.dataset.retry = '3';
+    // Inca kola aliases
+    if (currentSrc.toLowerCase().includes('inca') && currentSrc.toLowerCase().includes('kola')) {
+      if (currentSrc.includes('296')) {
+        img.src = currentSrc.replace(/Inca%20kola%20296%20ml\.jpg/i, 'inca%20kola.jpg');
+        return;
+      } else {
+        img.src = currentSrc.replace(/inca%20kola\.jpg/i, 'Inca%20kola%20296%20ml.jpg');
+        return;
+      }
+    }
     // Try decoded raw URL
     try {
       img.src = decodeURI(currentSrc);

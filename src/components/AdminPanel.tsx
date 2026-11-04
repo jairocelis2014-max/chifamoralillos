@@ -41,7 +41,28 @@ export const UPLOADED_GITHUB_PHOTOS = [
   { name: 'Wantán frito (1 Doc.)', url: '/uploads/Wantán frito (1 Doc.).jpg' },
   { name: 'Wantán frito (media Doc.)', url: '/uploads/Wantán frito (media Doc.).jpg' },
   { name: 'Wantán frito especial (media Doc.)', url: '/uploads/Wantán frito especial (media Doc.).jpg' },
+  { name: 'Inca Kola 296 ml.', url: '/uploads/Inca kola 296 ml.jpg' },
   { name: 'Inca Kola helada', url: '/uploads/inca kola.jpg' },
+  { name: 'Coca Cola 296 ml.', url: '/uploads/Coca cola 296 ml..jpg' },
+  { name: 'Coca Cola 600 ml.', url: '/uploads/Coca cola 600 ml..jpg' },
+  { name: 'Coca Cola 1 Lt.', url: '/uploads/Coca cola de 1 Lt..jpg' },
+  { name: 'Coca Cola 1.5 Lt.', url: '/uploads/Coca cola 1.5 Lt..jpg' },
+  { name: 'Coca Cola 2.5 Lt.', url: '/uploads/Coca cola 2.5 Lt..jpg' },
+  { name: 'Sprite medio Lt.', url: '/uploads/Sprite medio Lt..jpg' },
+  { name: 'Agua mineral', url: '/uploads/Agua mineral.jpg' },
+  { name: 'Chicha morada media jarra', url: '/uploads/Chicha morada media jarra.jpg' },
+  { name: 'Chicha morada jarra familiar', url: '/uploads/Chicha morada jarra familiar.jpg' },
+  { name: 'Chicha morada mega familiar', url: '/uploads/Chicha morada mega familiar.jpg' },
+  { name: 'Cerveza Cristal', url: '/uploads/Cristal.jpg' },
+  { name: 'Cerveza Pilsen', url: '/uploads/Pilsen.jpg' },
+  { name: 'Vino Tacama semi seco', url: '/uploads/Tacama semi seco.jpg' },
+  { name: 'Vino Santiago Queirolo', url: '/uploads/Santiago Queirolo.jpg' },
+  { name: 'Vino chino gui huachen', url: '/uploads/Vino chino gui huachen.jpg' },
+  { name: 'Vino chino shi wan mi jiu', url: '/uploads/Vino chino shi wan mi jiu.jpg' },
+  { name: 'Té de manzanilla', url: '/uploads/Te de mnzanilla.jpg' },
+  { name: 'Té de anís', url: '/uploads/Te de anis.jpg' },
+  { name: 'Té de canela', url: '/uploads/Te de canela.jpg' },
+  { name: 'Té de jazmín', url: '/uploads/Te de jazmin.jpg' },
   { name: 'Logotipo Chifa Moralillos', url: '/uploads/logotipo chifa.jpg' },
 ];
 
@@ -644,6 +665,8 @@ export interface MenuSection {
   image: string;
   subcategories: string[];
 }
+
+export const MENU_VERSION = "${new Date().toISOString()}";
 
 export const CHIFA_INFO = ${JSON.stringify(chifaInfo || CHIFA_INFO, null, 2)};
 
