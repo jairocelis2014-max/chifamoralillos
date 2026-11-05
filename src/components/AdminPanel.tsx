@@ -4,67 +4,16 @@ import {
   Phone, MessageCircle, LogOut, DollarSign, RotateCcw, Upload, Image as ImageIcon, 
   Eye, Settings, TrendingUp, ShoppingBag, Bike, Store, Armchair, AlertCircle, 
   ArrowUpRight, Layers, FolderPlus, HelpCircle, FileSpreadsheet, Printer, Download,
-  FileText, RefreshCw, CheckCircle2, Clock, User, MapPin, Receipt, Search
+  FileText, RefreshCw, CheckCircle2, Clock, User, MapPin, Receipt, Search,
+  Globe, Server, Smartphone, Tablet, Laptop, XCircle, HardDrive
 } from 'lucide-react';
 import { MenuItem, MenuSection, MENU_SECTIONS, CHIFA_INFO, INITIAL_PRODUCTS } from '../data/chifaMenu';
+import { UPLOADED_GITHUB_PHOTOS } from '../data/uploadedPhotos';
 import { Order, CartItem, ServiceType, PaymentMethod } from '../types';
 import { resolveImageUrl, handleDishImageError } from '../utils/imageUrl';
 
-export const UPLOADED_GITHUB_PHOTOS = [
-  { name: 'Alitas fritas con limón', url: '/uploads/Alitas-fritas-con-limón.jpg' },
-  { name: 'Champiñones fritos', url: '/uploads/Champiñones fritos.jpg' },
-  { name: 'Chicharrón chino', url: '/uploads/Chicharrón chino.jpg' },
-  { name: 'Chicharrón de pollo con limón', url: '/uploads/Chicharrón de pollo con limón.jpg' },
-  { name: 'E1 Caldo de pollo con kion', url: '/uploads/E1 Caldo de pollo con kion.jpg' },
-  { name: 'E2 Caldo de pollo con verdura', url: '/uploads/E2 Caldo de pollo con verdura.jpg' },
-  { name: 'E3 Caldo de pollo con fideo chino', url: '/uploads/E3 Caldo de pollo con fideo chino.jpg' },
-  { name: 'E4 Caldo de pollo con tallarines', url: '/uploads/E4 Caldo de pollo con tallarines.jpg' },
-  { name: 'E5 Sopa wantán de pollo', url: '/uploads/E5 Sopa wantán de pollo.jpg' },
-  { name: 'E6 Sopa wantán especial', url: '/uploads/E6 Sopa wantán especial.jpg' },
-  { name: 'E7 Sopa womin especial', url: '/uploads/E7 Sopa womin especial.jpg' },
-  { name: 'E8 Sopa fuchifu', url: '/uploads/E8 Sopa fuchifu.jpg' },
-  { name: 'E9 Sopa pac pow', url: '/uploads/E9 Sopa pac pow.jpg' },
-  { name: 'E10 Sopa wantán de pollo familiar', url: '/uploads/E10 Sopa wantán de pollo familiar.jpg' },
-  { name: 'E11 Sopa wantán especial familiar', url: '/uploads/E11 Sopa wantán especial familiar.jpg' },
-  { name: 'E12 Sopa de langostinos con fideo chino', url: '/uploads/E12 Sopa de langostinos con fideo chino.jpg' },
-  { name: 'E13 Sopa de la casa', url: '/uploads/E13 Sopa de la casa.jpg' },
-  { name: 'E14 Sopa tan tan', url: '/uploads/E14 Sopa tan tan.jpg' },
-  { name: 'E15 Sopa siucao con langostino', url: '/uploads/E15 Sopa siucao con langostino.jpg' },
-  { name: 'Huevo de codorniz (media Doc.)', url: '/uploads/Huevo de codorniz (media Doc.).jpg' },
-  { name: 'Langostinos dorados', url: '/uploads/Langostinos dorados.jpg' },
-  { name: 'Lychess (chirimoya china)', url: '/uploads/Lychess (chirimoya china).jpg' },
-  { name: 'Nabo curtido', url: '/uploads/Nabo curtido.jpg' },
-  { name: 'Naranjita china (media Doc.)', url: '/uploads/Naranjita china (media Doc.).jpg' },
-  { name: 'Siucao frito de langostinos', url: '/uploads/Siucao frito de langostinos.jpg' },
-  { name: 'Siumay de langostinos (media Doc.)', url: '/uploads/Siumay de langostinos (media Doc.).jpg' },
-  { name: 'Siumay de pollo (media Doc.)', url: '/uploads/Siumay de pollo (media Doc.).jpg' },
-  { name: 'Wantán frito (1 Doc.)', url: '/uploads/Wantán frito (1 Doc.).jpg' },
-  { name: 'Wantán frito (media Doc.)', url: '/uploads/Wantán frito (media Doc.).jpg' },
-  { name: 'Wantán frito especial (media Doc.)', url: '/uploads/Wantán frito especial (media Doc.).jpg' },
-  { name: 'Inca Kola 296 ml.', url: '/uploads/Inca kola 296 ml.jpg' },
-  { name: 'Inca Kola helada', url: '/uploads/inca kola.jpg' },
-  { name: 'Coca Cola 296 ml.', url: '/uploads/Coca cola 296 ml..jpg' },
-  { name: 'Coca Cola 600 ml.', url: '/uploads/Coca cola 600 ml..jpg' },
-  { name: 'Coca Cola 1 Lt.', url: '/uploads/Coca cola de 1 Lt..jpg' },
-  { name: 'Coca Cola 1.5 Lt.', url: '/uploads/Coca cola 1.5 Lt..jpg' },
-  { name: 'Coca Cola 2.5 Lt.', url: '/uploads/Coca cola 2.5 Lt..jpg' },
-  { name: 'Sprite medio Lt.', url: '/uploads/Sprite medio Lt..jpg' },
-  { name: 'Agua mineral', url: '/uploads/Agua mineral.jpg' },
-  { name: 'Chicha morada media jarra', url: '/uploads/Chicha morada media jarra.jpg' },
-  { name: 'Chicha morada jarra familiar', url: '/uploads/Chicha morada jarra familiar.jpg' },
-  { name: 'Chicha morada mega familiar', url: '/uploads/Chicha morada mega familiar.jpg' },
-  { name: 'Cerveza Cristal', url: '/uploads/Cristal.jpg' },
-  { name: 'Cerveza Pilsen', url: '/uploads/Pilsen.jpg' },
-  { name: 'Vino Tacama semi seco', url: '/uploads/Tacama semi seco.jpg' },
-  { name: 'Vino Santiago Queirolo', url: '/uploads/Santiago Queirolo.jpg' },
-  { name: 'Vino chino gui huachen', url: '/uploads/Vino chino gui huachen.jpg' },
-  { name: 'Vino chino shi wan mi jiu', url: '/uploads/Vino chino shi wan mi jiu.jpg' },
-  { name: 'Té de manzanilla', url: '/uploads/Te de mnzanilla.jpg' },
-  { name: 'Té de anís', url: '/uploads/Te de anis.jpg' },
-  { name: 'Té de canela', url: '/uploads/Te de canela.jpg' },
-  { name: 'Té de jazmín', url: '/uploads/Te de jazmin.jpg' },
-  { name: 'Logotipo Chifa Moralillos', url: '/uploads/logotipo chifa.jpg' },
-];
+export { UPLOADED_GITHUB_PHOTOS };
+
 
 interface AdminPanelProps {
   isOpen: boolean;
@@ -129,9 +78,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [loginError, setLoginError] = useState('');
 
   // Active navigation tab
-  const [activeTab, setActiveTab] = useState<'reports' | 'orders' | 'products' | 'sections' | 'settings'>('reports');
+  const [activeTab, setActiveTab] = useState<'reports' | 'orders' | 'products' | 'sections' | 'settings' | 'cpanel'>('reports');
   const [reportFilter, setReportFilter] = useState<'diario' | 'semanal' | 'mensual' | 'todo'>('diario');
   const [orderStatusFilter, setOrderStatusFilter] = useState<string>('todos');
+  const [productStockFilter, setProductStockFilter] = useState<'all' | 'available' | 'soldout'>('all');
+  const backupFileInputRef = useRef<HTMLInputElement>(null);
 
   // Product editing modal state
   const [editingProduct, setEditingProduct] = useState<MenuItem | null>(null);
@@ -508,8 +459,76 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   };
 
   // Filtered products list for product management
+  const handleToggleProductAvailability = (prod: MenuItem) => {
+    const updated = { ...prod, available: prod.available === false ? true : false };
+    onUpdateProduct(updated);
+    setSyncNotice(`✓ "${prod.name}" marcado como ${updated.available ? 'Disponible' : 'Agotado'}`);
+    setTimeout(() => setSyncNotice(''), 3000);
+  };
+
+  const handleExportBackupJson = () => {
+    const backupData = {
+      version: '2026.11.05',
+      exportDate: new Date().toISOString(),
+      restaurant: chifaInfo.name,
+      totalDishes: products.length,
+      sections: sections,
+      products: products,
+      info: chifaInfo,
+    };
+    const jsonStr = JSON.stringify(backupData, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Chifa_Moralillos_Backup_Platos_${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setSyncNotice('✓ ¡Copia de seguridad JSON descargada! Puedes guardarla o importarla en otro dispositivo.');
+    setTimeout(() => setSyncNotice(''), 6000);
+  };
+
+  const handleImportBackupJsonFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = typeof event.target?.result === 'string' ? event.target.result : '';
+        if (!text) return;
+        const parsed = JSON.parse(text);
+        const importedProds: MenuItem[] = Array.isArray(parsed) ? parsed : (parsed.products || []);
+        if (Array.isArray(importedProds) && importedProds.length > 0) {
+          importedProds.forEach((p) => {
+            onUpdateProduct(p);
+          });
+          try {
+            localStorage.setItem('chifa_products_v5', JSON.stringify(importedProds));
+          } catch (err) {}
+          setSyncNotice(`✓ ¡Se importaron exitosamente ${importedProds.length} platos a tu sistema!`);
+          setTimeout(() => setSyncNotice(''), 6000);
+        } else {
+          alert('El archivo JSON no contiene una lista válida de platos.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error al leer el archivo JSON.');
+      }
+    };
+    reader.readAsText(file);
+    if (e.target) e.target.value = '';
+  };
+
   const filteredProductsList = useMemo(() => {
     return products.filter((p) => {
+      if (productStockFilter === 'available' && p.available === false) {
+        return false;
+      }
+      if (productStockFilter === 'soldout' && p.available !== false) {
+        return false;
+      }
       if (productSectionFilter !== null && p.sectionNumber !== productSectionFilter) {
         return false;
       }
@@ -523,7 +542,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       }
       return true;
     });
-  }, [products, productSectionFilter, productSearch]);
+  }, [products, productSectionFilter, productSearch, productStockFilter]);
 
   // Helper to compress images on the client to ~50KB so they never exceed Vercel / localStorage limits
   const compressImage = (file: File, maxDim = 800, quality = 0.85): Promise<string> => {
@@ -1106,6 +1125,19 @@ export const INITIAL_PRODUCTS: MenuItem[] = ${JSON.stringify(products, null, 2)}
               >
                 <Settings className="w-4 h-4 shrink-0" />
                 <span className="whitespace-nowrap font-bold">Configuración Chifa</span>
+              </button>
+
+              {/* Tab 6: Hosting cPanel */}
+              <button
+                onClick={() => setActiveTab('cpanel')}
+                className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-black text-xs transition shrink-0 shadow-sm ${
+                  activeTab === 'cpanel'
+                    ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-black shadow-cyan-500/30'
+                    : 'bg-[#26181e] text-gray-200 hover:text-white hover:bg-[#34222a] border border-gray-700/60'
+                }`}
+              >
+                <Globe className="w-4 h-4 shrink-0 text-cyan-400" />
+                <span className="whitespace-nowrap font-bold">Hosting cPanel</span>
               </button>
             </div>
 
@@ -1708,23 +1740,59 @@ export const INITIAL_PRODUCTS: MenuItem[] = ${JSON.stringify(products, null, 2)}
                     </p>
                   </div>
 
+                  {/* Input oculto para importar JSON de respaldo */}
+                  <input
+                    type="file"
+                    ref={backupFileInputRef}
+                    accept=".json"
+                    onChange={handleImportBackupJsonFile}
+                    className="hidden"
+                  />
+
                   <div className="flex items-center gap-2 flex-wrap">
                     <button
-                      onClick={handleDownloadChifaMenuFile}
-                      className="px-3 py-2 bg-blue-700/90 hover:bg-blue-600 text-white text-xs font-black rounded-xl border border-blue-500/50 flex items-center gap-1.5 transition active:scale-95 shadow"
-                      title="Descargar chifaMenu.ts actualizado con fotos y cambios para subir a GitHub"
+                      onClick={handleOpenCreateProduct}
+                      className="px-4 py-2 bg-gradient-to-r from-red-700 to-amber-600 hover:from-red-600 hover:to-amber-500 text-white font-black text-xs rounded-xl shadow-lg flex items-center gap-1.5 transition active:scale-95"
+                      title="Crear un nuevo plato en la carta"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>+ Agregar Plato</span>
+                    </button>
+
+                    <button
+                      onClick={handleExportBackupJson}
+                      className="px-3 py-2 bg-[#25171b] hover:bg-[#332025] text-amber-300 text-xs font-black rounded-xl border border-amber-600/50 flex items-center gap-1.5 transition active:scale-95 shadow"
+                      title="Exportar archivo JSON con todos los platos y fotos para respaldar o sincronizar en otros dispositivos"
                     >
                       <Download className="w-3.5 h-3.5" />
-                      <span>Descargar Menú GitHub</span>
+                      <span>Exportar Backup (JSON)</span>
+                    </button>
+
+                    <button
+                      onClick={() => backupFileInputRef.current?.click()}
+                      className="px-3 py-2 bg-[#25171b] hover:bg-[#332025] text-cyan-300 text-xs font-black rounded-xl border border-cyan-600/50 flex items-center gap-1.5 transition active:scale-95 shadow"
+                      title="Cargar archivo JSON de copia de seguridad en este dispositivo"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>Importar Backup (JSON)</span>
                     </button>
 
                     <button
                       onClick={handleSyncAllGitHubPhotos}
                       className="px-3 py-2 bg-emerald-700/90 hover:bg-emerald-600 text-white text-xs font-black rounded-xl border border-emerald-500/50 flex items-center gap-1.5 transition active:scale-95 shadow"
-                      title="Sincronizar platos con las fotos subidas al repositorio GitHub (/uploads/)"
+                      title="Sincronizar platos con las fotos oficiales subidas (/uploads/)"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
-                      <span>Sincronizar Fotos GitHub</span>
+                      <span>Sincronizar Fotos Oficiales</span>
+                    </button>
+
+                    <button
+                      onClick={handleDownloadChifaMenuFile}
+                      className="px-3 py-2 bg-blue-700/90 hover:bg-blue-600 text-white text-xs font-black rounded-xl border border-blue-500/50 flex items-center gap-1.5 transition active:scale-95 shadow"
+                      title="Descargar chifaMenu.ts actualizado para subir a GitHub o cPanel"
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      <span>Descargar chifaMenu.ts</span>
                     </button>
 
                     <button
@@ -1734,14 +1802,6 @@ export const INITIAL_PRODUCTS: MenuItem[] = ${JSON.stringify(products, null, 2)}
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
                       <span>Restablecer</span>
-                    </button>
-
-                    <button
-                      onClick={handleOpenCreateProduct}
-                      className="px-4 py-2 bg-gradient-to-r from-red-700 to-amber-600 hover:from-red-600 hover:to-amber-500 text-white font-black text-xs rounded-xl shadow-lg flex items-center gap-1.5 transition active:scale-95"
-                    >
-                      <Plus className="w-4 h-4" />
-                      <span>+ Agregar Nuevo Plato</span>
                     </button>
                   </div>
                 </div>
@@ -1753,28 +1813,70 @@ export const INITIAL_PRODUCTS: MenuItem[] = ${JSON.stringify(products, null, 2)}
                   </div>
                 )}
 
-                {/* Filters */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <input
-                    type="text"
-                    placeholder="Buscar plato para editar..."
-                    value={productSearch}
-                    onChange={(e) => setProductSearch(e.target.value)}
-                    className="bg-[#1b1215] text-xs text-white p-2.5 rounded-xl border border-gray-800 focus:outline-none focus:border-amber-400"
-                  />
+                {/* Filters Bar: Search, Category & Availability */}
+                <div className="space-y-2.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                    <div className="relative">
+                      <Search className="w-4 h-4 absolute left-3 top-3 text-gray-500" />
+                      <input
+                        type="text"
+                        placeholder="Buscar por nombre o código (ej: Chaufa, M1, Tipakay)..."
+                        value={productSearch}
+                        onChange={(e) => setProductSearch(e.target.value)}
+                        className="w-full bg-[#1b1215] text-xs text-white pl-9 pr-3 py-2.5 rounded-xl border border-gray-800 focus:outline-none focus:border-amber-400"
+                      />
+                    </div>
 
-                  <select
-                    value={productSectionFilter === null ? '' : productSectionFilter}
-                    onChange={(e) => setProductSectionFilter(e.target.value === '' ? null : Number(e.target.value))}
-                    className="bg-[#1b1215] text-xs text-white p-2.5 rounded-xl border border-gray-800 focus:outline-none focus:border-amber-400"
-                  >
-                    <option value="">Todas las {sections.length} Secciones</option>
-                    {sections.map((sec) => (
-                      <option key={sec.number} value={sec.number}>
-                        Sección {sec.number}: {sec.shortTitle || sec.title}
-                      </option>
-                    ))}
-                  </select>
+                    <select
+                      value={productSectionFilter === null ? '' : productSectionFilter}
+                      onChange={(e) => setProductSectionFilter(e.target.value === '' ? null : Number(e.target.value))}
+                      className="bg-[#1b1215] text-xs text-white p-2.5 rounded-xl border border-gray-800 focus:outline-none focus:border-amber-400 font-medium"
+                    >
+                      <option value="">Todas las {sections.length} Secciones del Menú</option>
+                      {sections.map((sec) => (
+                        <option key={sec.number} value={sec.number}>
+                          {sec.number}. {sec.shortTitle || sec.title}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Stock filter pills */}
+                    <div className="flex items-center gap-1 bg-[#1b1215] p-1 rounded-xl border border-gray-800">
+                      <button
+                        type="button"
+                        onClick={() => setProductStockFilter('all')}
+                        className={`flex-1 py-1.5 px-2 text-[11px] font-extrabold rounded-lg transition text-center ${
+                          productStockFilter === 'all'
+                            ? 'bg-amber-500 text-black shadow'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        Todos ({products.length})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setProductStockFilter('available')}
+                        className={`flex-1 py-1.5 px-2 text-[11px] font-extrabold rounded-lg transition text-center ${
+                          productStockFilter === 'available'
+                            ? 'bg-emerald-600 text-white shadow'
+                            : 'text-gray-400 hover:text-emerald-400'
+                        }`}
+                      >
+                        Disponibles ({products.filter((p) => p.available !== false).length})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setProductStockFilter('soldout')}
+                        className={`flex-1 py-1.5 px-2 text-[11px] font-extrabold rounded-lg transition text-center ${
+                          productStockFilter === 'soldout'
+                            ? 'bg-red-600 text-white shadow'
+                            : 'text-gray-400 hover:text-red-400'
+                        }`}
+                      >
+                        Agotados ({products.filter((p) => p.available === false).length})
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Products Grid */}
@@ -1782,49 +1884,96 @@ export const INITIAL_PRODUCTS: MenuItem[] = ${JSON.stringify(products, null, 2)}
                   {filteredProductsList.map((prod) => (
                     <div
                       key={prod.id}
-                      className={`bg-[#1c1215] p-3 rounded-2xl border transition flex items-center gap-3 relative ${
+                      className={`bg-[#1c1215] p-3 rounded-2xl border transition flex items-center gap-3 relative shadow-sm ${
                         prod.available === false
-                          ? 'border-red-950/60 opacity-60'
-                          : 'border-gray-800 hover:border-gray-700'
+                          ? 'border-red-950/80 bg-[#160d10] opacity-75'
+                          : 'border-gray-800 hover:border-amber-500/30'
                       }`}
                     >
-                      <div className="w-14 h-14 rounded-xl overflow-hidden bg-black shrink-0 border border-gray-800 relative">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-black shrink-0 border border-gray-800 relative">
                         <img
                           src={resolveImageUrl(prod.image)}
                           alt={prod.name}
                           className="w-full h-full object-cover"
                           onError={handleDishImageError}
                         />
+                        {prod.image?.startsWith('/uploads/') && (
+                          <span className="absolute bottom-0.5 right-0.5 bg-black/80 text-[8px] font-black text-amber-300 px-1 rounded shadow">
+                            HD
+                          </span>
+                        )}
                       </div>
 
                       <div className="flex-1 min-w-0 pr-1">
-                        <span className="font-mono text-[10px] font-black text-amber-400 block leading-tight">
-                          {prod.id}
-                        </span>
-                        <h4 className="font-bold text-white text-xs truncate">{prod.name}</h4>
-                        <span className="font-mono font-black text-amber-300 text-xs">
-                          S/. {prod.price.toFixed(2)}
-                        </span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="font-mono text-[10px] font-black text-amber-400 leading-tight">
+                            {prod.id}
+                          </span>
+                          {prod.subCategory && (
+                            <span className="text-[9px] px-1.5 py-0.2 bg-[#2d1b22] text-gray-300 rounded-md truncate max-w-[110px]">
+                              {prod.subCategory}
+                            </span>
+                          )}
+                        </div>
+                        <h4 className="font-bold text-white text-xs truncate mt-0.5" title={prod.name}>
+                          {prod.name}
+                        </h4>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="font-mono font-black text-amber-300 text-xs">
+                            S/. {prod.price.toFixed(2)}
+                          </span>
+                          {prod.takeawayPrice && (
+                            <span className="text-[10px] text-gray-400">
+                              (Llevar: S/. {prod.takeawayPrice.toFixed(2)})
+                            </span>
+                          )}
+                        </div>
+                        
+                        {/* Quick stock status toggle button */}
+                        <button
+                          type="button"
+                          onClick={() => handleToggleProductAvailability(prod)}
+                          className={`mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold flex items-center gap-1 transition active:scale-95 ${
+                            prod.available !== false
+                              ? 'bg-emerald-950/70 text-emerald-300 hover:bg-emerald-900 border border-emerald-700/50'
+                              : 'bg-red-950/80 text-red-300 hover:bg-red-900 border border-red-800/80'
+                          }`}
+                          title="Tocar para cambiar disponibilidad al instante"
+                        >
+                          {prod.available !== false ? (
+                            <>
+                              <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
+                              <span>En Carta</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="w-3 h-3 text-red-400 shrink-0" />
+                              <span>Agotado</span>
+                            </>
+                          )}
+                        </button>
                       </div>
 
-                      <div className="flex items-center gap-1 shrink-0">
+                      <div className="flex flex-col gap-1.5 shrink-0">
                         <button
                           onClick={() => handleOpenEditProduct(prod)}
-                          className="p-1.5 text-gray-300 hover:text-amber-400 rounded-lg bg-[#25171a] hover:bg-[#321e23] transition"
-                          title="Editar plato"
+                          className="p-2 text-gray-300 hover:text-amber-400 rounded-xl bg-[#25171a] hover:bg-[#321e23] border border-gray-800 transition"
+                          title="Editar plato y cambiar foto"
                         >
-                          <Edit3 className="w-3.5 h-3.5" />
+                          <Edit3 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => {
-                            if (window.confirm(`¿Eliminar ${prod.name}?`)) {
+                            if (window.confirm(`¿Estás seguro de eliminar el plato "${prod.name}" (${prod.id})?`)) {
                               onDeleteProduct(prod.id);
+                              setSyncNotice(`✓ Plato "${prod.name}" eliminado correctamente`);
+                              setTimeout(() => setSyncNotice(''), 3000);
                             }
                           }}
-                          className="p-1.5 text-gray-400 hover:text-red-400 rounded-lg bg-[#25171a] hover:bg-red-950 transition"
+                          className="p-2 text-gray-400 hover:text-red-400 rounded-xl bg-[#25171a] hover:bg-red-950 border border-gray-800 transition"
                           title="Eliminar plato"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -2092,6 +2241,115 @@ export const INITIAL_PRODUCTS: MenuItem[] = ${JSON.stringify(products, null, 2)}
                     </button>
                   </div>
                 </form>
+              </div>
+            )}
+
+            {/* ================= TAB 6: GUÍA & HERRAMIENTAS HOSTING CPANEL ================= */}
+            {activeTab === 'cpanel' && (
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-gray-800 pb-3">
+                  <div>
+                    <h3 className="font-black text-white text-base flex items-center gap-2">
+                      <Globe className="w-5 h-5 text-cyan-400" />
+                      <span>Guía de Despliegue en Hosting cPanel Compartido</span>
+                    </h3>
+                    <p className="text-xs text-gray-400">
+                      Instrucciones paso a paso para subir tu sistema web a tu hosting compartido cPanel sin ningún problema
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-cyan-950/80 text-cyan-300 border border-cyan-700/60 flex items-center gap-1.5">
+                      <HardDrive className="w-3.5 h-3.5 text-cyan-400" />
+                      100% Compatible con cPanel
+                    </span>
+                  </div>
+                </div>
+
+                {/* Steps Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                  {/* Step 1 */}
+                  <div className="bg-[#1b1215] p-4 rounded-2xl border border-gray-800 space-y-2">
+                    <div className="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-300 font-black flex items-center justify-center border border-cyan-500/30">
+                      1
+                    </div>
+                    <h4 className="font-extrabold text-white text-sm">Compilar la Web</h4>
+                    <p className="text-xs text-gray-300 leading-relaxed">
+                      Ejecuta en tu terminal <code className="bg-black/60 px-1.5 py-0.5 rounded text-amber-300 font-mono">npm run build</code>. Esto genera la carpeta optimizada <code className="text-cyan-300">dist/</code> con todos los archivos HTML, CSS y JS listos para producción.
+                    </p>
+                  </div>
+
+                  {/* Step 2 */}
+                  <div className="bg-[#1b1215] p-4 rounded-2xl border border-gray-800 space-y-2">
+                    <div className="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-300 font-black flex items-center justify-center border border-cyan-500/30">
+                      2
+                    </div>
+                    <h4 className="font-extrabold text-white text-sm">Subir a public_html</h4>
+                    <p className="text-xs text-gray-300 leading-relaxed">
+                      Entra a tu <strong>cPanel &gt; Administrador de Archivos</strong>, abre <code className="text-amber-300">public_html</code> y sube el contenido de <code className="text-cyan-300">dist/</code> junto al archivo <code className="text-amber-300">.htaccess</code> configurado.
+                    </p>
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className="bg-[#1b1215] p-4 rounded-2xl border border-gray-800 space-y-2">
+                    <div className="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-300 font-black flex items-center justify-center border border-cyan-500/30">
+                      3
+                    </div>
+                    <h4 className="font-extrabold text-white text-sm">Subir Carpeta de Fotos</h4>
+                    <p className="text-xs text-gray-300 leading-relaxed">
+                      Sube la carpeta <code className="text-amber-300">uploads/</code> a <code className="text-cyan-300">public_html/uploads/</code> en cPanel. Todas las más de 100 fotos de platos y bebidas se mostrarán de inmediato con ultra velocidad.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Sincronización Multi-Dispositivo Info */}
+                <div className="bg-[#20151a] p-4 sm:p-5 rounded-2xl border border-amber-500/30 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Smartphone className="w-5 h-5 text-amber-400" />
+                    <Laptop className="w-5 h-5 text-amber-400" />
+                    <Tablet className="w-5 h-5 text-amber-400" />
+                    <h4 className="font-extrabold text-white text-sm">Sincronización Total en Celulares, Tablets y Computadoras</h4>
+                  </div>
+                  <p className="text-xs text-gray-300 leading-relaxed">
+                    La web está diseñada para ser <strong>100% administrable y sincronizada</strong>. Cuando realizas cambios en un plato, precio o estado de stock:
+                  </p>
+                  <ul className="text-xs text-gray-300 space-y-1.5 list-disc pl-5">
+                    <li><strong>Sincronización Inmediata en Navegador:</strong> Se guarda en LocalStorage permanente y se emite por BroadcastChannel a cualquier pestaña abierta.</li>
+                    <li><strong>Copia de Seguridad Portátil (JSON):</strong> Puedes pulsar el botón "Exportar Backup JSON" en tu laptop o PC y abrirlo en tu celular o tablet con "Importar Backup JSON" para clonar o sincronizar tus platos al 100%.</li>
+                    <li><strong>Hosting Compartido con Node.js (Opcional):</strong> Si tu cPanel tiene la opción "Setup Node.js App", puedes ejecutar <code className="bg-black/60 px-1 py-0.5 rounded text-amber-300 font-mono">server.ts</code> para sincronización automática en la nube vía API REST. Si tu cPanel no tiene Node.js, la web funciona de forma estática perfecta con LocalStorage.</li>
+                  </ul>
+                </div>
+
+                {/* Direct Action Buttons */}
+                <div className="bg-[#1b1215] p-4 rounded-2xl border border-gray-800 space-y-3">
+                  <h4 className="font-extrabold text-white text-xs uppercase tracking-wider text-gray-400">
+                    Herramientas de Exportación y Respaldos
+                  </h4>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <button
+                      onClick={handleExportBackupJson}
+                      className="px-4 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-black text-xs rounded-xl shadow-lg flex items-center gap-2 transition active:scale-95"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Descargar Backup Completo (JSON)</span>
+                    </button>
+
+                    <button
+                      onClick={() => backupFileInputRef.current?.click()}
+                      className="px-4 py-2.5 bg-[#2a1d22] hover:bg-[#39282f] text-amber-300 font-bold text-xs rounded-xl border border-amber-600/40 flex items-center gap-2 transition active:scale-95"
+                    >
+                      <Upload className="w-4 h-4" />
+                      <span>Importar Backup (JSON) a este Dispositivo</span>
+                    </button>
+
+                    <button
+                      onClick={handleDownloadChifaMenuFile}
+                      className="px-4 py-2.5 bg-blue-700 hover:bg-blue-600 text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition active:scale-95"
+                    >
+                      <FileText className="w-4 h-4" />
+                      <span>Descargar chifaMenu.ts Actualizado</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>

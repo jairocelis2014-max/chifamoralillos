@@ -230,7 +230,26 @@ export default function App() {
   useEffect(() => {
     fetchServerData();
     const interval = setInterval(fetchServerData, 4000);
-    return () => clearInterval(interval);
+
+    // Multi-tab real-time sync via BroadcastChannel
+    let channel: BroadcastChannel | null = null;
+    try {
+      if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+        channel = new BroadcastChannel('chifa_sync_channel');
+        channel.onmessage = (event) => {
+          if (event.data?.type === 'SYNC_PRODUCTS' && Array.isArray(event.data.products)) {
+            setProducts(event.data.products);
+          }
+        };
+      }
+    } catch (e) {
+      console.warn('BroadcastChannel not supported in this environment');
+    }
+
+    return () => {
+      clearInterval(interval);
+      if (channel) channel.close();
+    };
   }, []);
 
   // Admin login state
@@ -510,8 +529,25 @@ export default function App() {
     }
   };
 
+  const broadcastProductChange = (updatedProducts: MenuItem[]) => {
+    try {
+      localStorage.setItem('chifa_products_v5', JSON.stringify(updatedProducts));
+      if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+        const bc = new BroadcastChannel('chifa_sync_channel');
+        bc.postMessage({ type: 'SYNC_PRODUCTS', products: updatedProducts });
+        bc.close();
+      }
+    } catch (e) {
+      console.warn('Sync broadcast warning:', e);
+    }
+  };
+
   const handleUpdateProduct = async (updated: MenuItem) => {
-    setProducts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+    setProducts((prev) => {
+      const next = prev.map((p) => (p.id === updated.id ? updated : p));
+      broadcastProductChange(next);
+      return next;
+    });
     try {
       await fetch(`/api/products/${encodeURIComponent(updated.id)}`, {
         method: 'PUT',
@@ -524,7 +560,11 @@ export default function App() {
   };
 
   const handleAddProduct = async (newProd: MenuItem) => {
-    setProducts((prev) => [newProd, ...prev]);
+    setProducts((prev) => {
+      const next = [newProd, ...prev];
+      broadcastProductChange(next);
+      return next;
+    });
     try {
       await fetch('/api/products', {
         method: 'POST',
@@ -537,7 +577,11 @@ export default function App() {
   };
 
   const handleDeleteProduct = async (productId: string) => {
-    setProducts((prev) => prev.filter((p) => p.id !== productId));
+    setProducts((prev) => {
+      const next = prev.filter((p) => p.id !== productId);
+      broadcastProductChange(next);
+      return next;
+    });
     try {
       await fetch(`/api/products/${encodeURIComponent(productId)}`, {
         method: 'DELETE',
@@ -548,9 +592,9 @@ export default function App() {
   };
 
   const handleResetProducts = async () => {
-    if (window.confirm('¿Deseas restablecer todos los platos a los valores originales del menú PDF?')) {
+    if (window.confirm('¿Deseas restablecer todos los platos a los valores originales del menú oficial?')) {
       setProducts(INITIAL_PRODUCTS);
-      localStorage.removeItem('chifa_products_v3');
+      broadcastProductChange(INITIAL_PRODUCTS);
       try {
         await fetch('/api/products/reset', { method: 'POST' });
       } catch (e) {

@@ -1,10 +1,10 @@
 /**
- * Utility to format and resolve dish image URLs safely across Vite, Vercel, and GitHub.
- * Handles spaces, URL encoding, hyphenated aliases, and automatic fallback.
+ * Utility to format and resolve dish image URLs safely across Vite, Vercel, GitHub, and cPanel hosting.
+ * Handles spaces, URL encoding, hyphenated aliases, subdirectories, and automatic resilient fallback.
  */
 
 export function resolveImageUrl(url: string | undefined): string {
-  if (!url || typeof url !== 'string') {
+  if (!url || typeof url !== 'string' || url.trim() === '') {
     return 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=600&q=80';
   }
 
@@ -15,11 +15,11 @@ export function resolveImageUrl(url: string | undefined): string {
 
   // Ensure clean leading slash
   let cleanUrl = url.trim();
-  if (!cleanUrl.startsWith('/') && (cleanUrl.startsWith('uploads/') || cleanUrl.startsWith('assets/'))) {
+  if (!cleanUrl.startsWith('/') && !cleanUrl.startsWith('./') && (cleanUrl.startsWith('uploads/') || cleanUrl.startsWith('assets/'))) {
     cleanUrl = '/' + cleanUrl;
   }
 
-  // Encode special characters like spaces, accents, and parentheses for safe Vercel and CDN URL fetching
+  // Encode special characters like spaces, accents, and parentheses for safe cPanel / Vercel / Apache fetching
   try {
     return encodeURI(decodeURI(cleanUrl));
   } catch (e) {
@@ -29,8 +29,9 @@ export function resolveImageUrl(url: string | undefined): string {
 
 /**
  * Handles image loading errors on <img> tags.
- * If a URL like /uploads/Langostinos%20dorados.jpg fails, tries hyphens, spaces, or aliases.
- * If all fail, sets a reliable high quality Chifa dish fallback.
+ * If a URL like /uploads/Langostinos%20dorados.jpg fails, tries hyphens, spaces, aliases,
+ * relative paths without leading slash (for cPanel subdirectories), or dot fixes.
+ * If all attempts fail, sets a reliable high quality Chifa dish fallback.
  */
 export function handleDishImageError(e: React.SyntheticEvent<HTMLImageElement, Event>) {
   const img = e.currentTarget;
@@ -86,6 +87,19 @@ export function handleDishImageError(e: React.SyntheticEvent<HTMLImageElement, E
     try {
       img.src = decodeURI(currentSrc);
       return;
+    } catch {
+      // ignore
+    }
+  } else if (retries === 3) {
+    img.dataset.retry = '4';
+    // Try relative path from current origin without leading slash for cPanel subfolder installations
+    try {
+      const urlObj = new URL(currentSrc);
+      const pathname = urlObj.pathname;
+      if (pathname.startsWith('/uploads/')) {
+        img.src = 'uploads/' + pathname.slice(9);
+        return;
+      }
     } catch {
       // ignore
     }

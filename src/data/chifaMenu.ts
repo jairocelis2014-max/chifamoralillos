@@ -27,7 +27,7 @@ export interface MenuSection {
   image: string; // Elegant background image for each section
   subcategories: string[];
 }
-export const MENU_VERSION = "2026.11.04.v3";
+export const MENU_VERSION = "2026.11.05.v100";
 
 export const CHIFA_INFO = {
   name: "CHIFA MORALILLOS",
@@ -210,7 +210,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Entradas",
     price: 21.00,
     description: "Alitas de pollo marinadas con toques cítricos y fritas al estilo chifa.",
-    image: "/uploads/Alitas-fritas-con-limón.jpg",
+    image: "/uploads/Alitas fritas con limón.jpg",
   },
   {
     id: "E-CHICHARRON-CHINO",
@@ -466,7 +466,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 23.00,
     popular: true,
     description: "El más pedido: arroz al wok bien ahumado con pollo, chancho asado cha siu, langostinos, tortilla picada y cebollita china.",
-    image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/15. Taypa especial con chaufa.jpg"
   },
   {
     id: "G2",
@@ -477,7 +477,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 21.00,
     popular: true,
     description: "Clásico infaltable salteado a fuego alto con trozos de pechuga de pollo, huevo, sillao de primera y cebollita china.",
-    image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/1. Chaufa con pollo y wantán frito.jpg"
   },
   {
     id: "G3",
@@ -498,7 +498,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 22.00,
     popular: true,
     description: "Arroz chaufa con trozos de chancho asado oriental de corte tierno y sabor caramelizado.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/2. Chaufa con chancho y wantán frito.jpg"
   },
   {
     id: "G5",
@@ -540,7 +540,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 22.00,
     popular: true,
     description: "Doble sabor con pechuga de pollo y chancho asado cha siu salteados a fuego vivo.",
-    image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/5. Combinado (tallarín con pollo y chaufa).jpg"
   },
   {
     id: "G9",
@@ -595,7 +595,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 32.00,
     popular: true,
     description: "El rey de los tallarines: pollo, chancho asado, langostinos, huevos de codorniz, champiñones y verduras surtidas en salsa especial.",
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/16. Tallarín taypa.jpg"
   },
   {
     id: "H2",
@@ -605,7 +605,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Tallarines",
     price: 27.00,
     description: "Fideos al dente salteados con pechuga de pollo en trozos, verduras frescas, colanfán y salsa de ostión.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/3. Tallarín con pollo.jpg"
   },
   {
     id: "H3",
@@ -625,7 +625,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Tallarines",
     price: 26.00,
     description: "Fideos salteados con sabroso chancho asado cha siu, verduras orientales y salsa de ostión.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/4. Tallarín con chancho.jpg"
   },
   {
     id: "H5",
@@ -635,7 +635,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Tallarines",
     price: 24.00,
     description: "Clásico tallarín saltado con pollo, cebolla china, frejolito y fideos de huevo.",
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/3. Tallarín con pollo.jpg"
   },
   {
     id: "H6",
@@ -686,7 +686,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Tallarines",
     price: 27.00,
     description: "Fideos salteados con láminas de carne de res, cebollas, pimientos y salsa concentrada.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/H11 Lomo saltado.jpg"
   },
 
   // ================= 3. TORTILLAS, ALITAS, PLANCHA Y POLLOS =================
@@ -762,7 +762,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Alitas",
     price: 26.00,
     description: "Alitas doradas crujientes salteadas con verduras chinas en salsa oriental.",
-    image: "https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Alitas fritas con limón.jpg"
   },
   {
     id: "K2",
@@ -796,7 +796,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 32.00,
     popular: true,
     description: "Espectacular plato humeante con pollo, chancho asado, langostinos, huevos de codorniz y verduras en plancha chisporroteando.",
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F1 Taypa especial.jpg"
   },
   {
     id: "I2",
@@ -806,7 +806,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Plancha",
     price: 28.00,
     description: "Trozos de pechuga a la plancha con fermento de frijol negro (tausi), pimiento y cebolla.",
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F7 Pollo al vapor con tausi.jpg"
   },
   {
     id: "I3",
@@ -816,7 +816,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Plancha",
     price: 28.00,
     description: "Tiernas láminas de res en salsa tausi servidas en plancha de hierro candente.",
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/H13 Carne con tausi.jpg"
   },
   {
     id: "I4",
@@ -838,7 +838,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 30.00,
     spicy: true,
     description: "Chancho asado en rodajas salteado con pimientos y salsa picante en plancha caliente.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/22. Chancho picante con chaufa.jpg"
   },
   {
     id: "I6",
@@ -848,7 +848,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Plancha",
     price: 30.00,
     description: "Pechuga de pollo con champiñones enteros bañados en salsa suave de ostión.",
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F8 Pollo al vapor con yuyo y champiñones.jpg"
   },
   {
     id: "I7",
@@ -872,7 +872,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 26.00,
     popular: true,
     description: "Clásico plato salado de pollo apanado crujiente bañado en salsa de sillao, kion, ajonjolí y canela china.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/8. Chijaukay de pollo con chaufa.jpg"
   },
   {
     id: "J2",
@@ -894,7 +894,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 26.00,
     popular: true,
     description: "Pollo apanado crocante bañado en vibrante y clásica salsa tamarindo agridulce con toques de piña.",
-    image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Tipakay de pollo con chaufa.jpg"
   },
   {
     id: "J4",
@@ -925,7 +925,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Pollos",
     price: 26.00,
     description: "Pollo salteado con col china, pacchoy, holantao, pimientos y zanahoria al dente.",
-    image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/6. Pollo con verduras y chaufa.jpg"
   },
   {
     id: "J7",
@@ -935,7 +935,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Pollos",
     price: 25.00,
     description: "Pechuga de pollo al wok en salsa de frijol negro fermentado (tausi) con cebolla y pimiento.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/10. Pollo con tausi y chaufa.jpg"
   },
   {
     id: "J8",
@@ -955,7 +955,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Pollos",
     price: 25.00,
     description: "Trozos de pollo salteados con bastante ajo picado dorado y cebolla en salsa ligera.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/12. Pollo al ajo con chaufa.jpg"
   },
   {
     id: "J10",
@@ -965,7 +965,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Pollos",
     price: 25.00,
     description: "Pollo en dados tiernos salteado con verduras y bañado en salsa tamarindo dulce.",
-    image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/7. Pollo con tamarindo y chaufa.jpg"
   },
   {
     id: "J11",
@@ -975,7 +975,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Pollos",
     price: 26.00,
     description: "Trozos de pechuga salteados con rodajas de piña fresca y toques agridulces.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/14. Pollo con piña y chaufa.jpg"
   },
   {
     id: "J12",
@@ -1019,7 +1019,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 26.00,
     popular: true,
     description: "Cortes de chancho asado cha siu salteados al wok con col china, pacchoy y pimientos.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/21. Chancho con verduras y chaufa.jpg"
   },
   {
     id: "L2",
@@ -1040,7 +1040,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 26.00,
     popular: true,
     description: "La combinación perfecta agridulce: chancho asado con trozos de piña jugosa y salsa tamarindo.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/20. Chancho con tamarindo y chaufa.jpg"
   },
   {
     id: "L4",
@@ -1050,7 +1050,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Chancho",
     price: 26.00,
     description: "Chancho asado salteado al fuego vivo con abundante ajo dorado y cebollas.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/18. Chancho al ajo con chaufa.jpg"
   },
   {
     id: "L5",
@@ -1060,7 +1060,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Chancho",
     price: 26.00,
     description: "Chancho con salsa tausi tradicional de frijoles negros fermentados con kion y pimientos.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/19. Chancho con tausi y chaufa.jpg"
   },
   {
     id: "L6",
@@ -1144,7 +1144,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 32.00,
     popular: true,
     description: "Langostinos dorados bañados en salsa tamarindo agridulce con verduras y piña.",
-    image: "https://images.unsplash.com/photo-1559742811-822863c46f83?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F13 Langostinos con tamarindo.jpg"
   },
   {
     id: "F14",
@@ -1154,7 +1154,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Langostinos",
     price: 32.00,
     description: "Langostinos salteados con fideos transparentes de arroz y salsa oriental.",
-    image: "https://images.unsplash.com/photo-1559742811-822863c46f83?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F14 Langostinos con fideo chino.jpg"
   },
   {
     id: "F15",
@@ -1164,7 +1164,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Langostinos",
     price: 32.00,
     description: "Langostinos cocidos con rodajas de piña agridulce y pimientos en salsa de tamarindo.",
-    image: "https://images.unsplash.com/photo-1559742811-822863c46f83?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F15 Langostinos con piña.jpg"
   },
   {
     id: "F16",
@@ -1174,7 +1174,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Langostinos",
     price: 32.00,
     description: "Langostinos salteados al fuego vivo con brócoli crujiente y salsa de ostión.",
-    image: "https://images.unsplash.com/photo-1559742811-822863c46f83?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F16 Langostinos con brocoli.jpg"
   },
 
   // Carnes
@@ -1187,7 +1187,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 25.00,
     popular: true,
     description: "Tiras jugosas de carne de res salteadas al wok con cebolla, tomate, ají amarillo y sillao.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/H11 Lomo saltado.jpg"
   },
   {
     id: "H12",
@@ -1197,7 +1197,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Carnes",
     price: 24.00,
     description: "Carne de res salteada al estilo oriental con col china, zanahorias y pimientos.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/H12 Carne con verduras.jpg"
   },
   {
     id: "H13",
@@ -1207,7 +1207,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Carnes",
     price: 24.00,
     description: "Carne salteada en salsa espesa de frijol negro chino fermentado y pimientos.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/H13 Carne con tausi.jpg"
   },
   {
     id: "H14",
@@ -1218,7 +1218,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 24.00,
     spicy: true,
     description: "Carne de res al wok salteada con ají picante, cebolla, kion y cebollita china.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/H14 Carne picante.jpg"
   },
   {
     id: "H15",
@@ -1228,7 +1228,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Carnes",
     price: 24.00,
     description: "Tiras de res salteadas al fuego vivo con abundante ajo dorado.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/H15 Carne al ajo.jpg"
   },
 
   // Platos especiales
@@ -1241,7 +1241,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 32.00,
     popular: true,
     description: "Gran combinación imperial: pollo, chancho asado, langostinos, huevos de codorniz, champiñones y verduras surtidas.",
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F1 Taypa especial.jpg"
   },
   {
     id: "F2",
@@ -1252,7 +1252,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 31.00,
     popular: true,
     description: "Base de wantanes fritos crujientes cubiertos con salteado de chancho asado, pollo, langostinos, piña y verduras en salsa agridulce tamarindo.",
-    image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F2 Kam lu wantán especial.jpg"
   },
   {
     id: "F3",
@@ -1263,7 +1263,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 26.00,
     popular: true,
     description: "Rollitos de pechuga de pollo rellenos de verduras y chancho, bañados en rica salsa de ostión.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F3 Pollo enrollado en salsa de ostión.jpg"
   },
   {
     id: "F4",
@@ -1273,7 +1273,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Especiales",
     price: 26.00,
     description: "Rollitos de pollo crocantes dorados cubiertos con salsa de tamarindo agridulce y piña.",
-    image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F4 Pollo enrollado con tamarindo (dulce).jpg"
   },
   {
     id: "F5",
@@ -1283,7 +1283,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Especiales",
     price: 26.00,
     description: "Rollos de pechuga tierna bañados en suave salsa blanca aterciopelada oriental.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F5 Pollo enrollado en salsa blanca.jpg"
   },
   {
     id: "F6",
@@ -1293,7 +1293,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Especiales",
     price: 28.00,
     description: "Pechuga de pollo cocida con algas chinas de yuyo negro y salsa fina.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F6 Pollo en trozos de yuyo.jpg"
   },
   {
     id: "F7",
@@ -1303,7 +1303,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Especiales",
     price: 28.00,
     description: "Pollo tierno cocinado al vapor en canastilla de bambú con pasta de frijol negro fermentado y kion.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F7 Pollo al vapor con tausi.jpg"
   },
   {
     id: "F8",
@@ -1313,7 +1313,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Especiales",
     price: 29.00,
     description: "Preparación saludable al vapor con pollo jugoso, algas y champiñones enteros.",
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F8 Pollo al vapor con yuyo y champiñones.jpg"
   },
 
   // ================= 5. MENÚ DE LUNES A VIERNES (37 PLATOS) =================
@@ -1329,7 +1329,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     includesEntrance: true,
     popular: true,
     description: "Generosa porción de arroz chaufa con pollo al wok, acompañado de wantanes fritos. Incluye Entrada (Sopa Wantán o Wantán Frito).",
-    image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/1. Chaufa con pollo y wantán frito.jpg"
   },
   {
     id: "MENU-02",
@@ -1341,7 +1341,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 17.00,
     includesEntrance: true,
     description: "Arroz chaufa con chancho asado cha siu y wantanes. Incluye Entrada (Sopa Wantán o Wantán Frito).",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/2. Chaufa con chancho y wantán frito.jpg"
   },
   {
     id: "MENU-03",
@@ -1353,7 +1353,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 17.00,
     includesEntrance: true,
     description: "Tallarín saltado con pollo y frejolito chino. Incluye Entrada (Sopa Wantán o Wantán Frito).",
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/3. Tallarín con pollo.jpg"
   },
   {
     id: "MENU-04",
@@ -1365,7 +1365,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 18.00,
     includesEntrance: true,
     description: "Tallarín saltado con jugoso chancho asado. Incluye Entrada (Sopa Wantán o Wantán Frito).",
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/4. Tallarín con chancho.jpg"
   },
   {
     id: "MENU-05",
@@ -1378,7 +1378,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     includesEntrance: true,
     popular: true,
     description: "El clásico dúo: media porción de tallarín con pollo y media de arroz chaufa. Incluye Entrada (Sopa Wantán o Wantán Frito).",
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/5. Combinado (tallarín con pollo y chaufa).jpg"
   },
   {
     id: "MENU-06",
@@ -1390,7 +1390,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 20.00,
     includesEntrance: true,
     description: "Pollo salteado con verduras chinas al wok acompañado de arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/6. Pollo con verduras y chaufa.jpg"
   },
   {
     id: "MENU-07",
@@ -1402,7 +1402,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 20.00,
     includesEntrance: true,
     description: "Pollo en salsa tamarindo dulce con arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/7. Pollo con tamarindo y chaufa.jpg"
   },
   {
     id: "MENU-08",
@@ -1415,7 +1415,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     includesEntrance: true,
     popular: true,
     description: "Pollo crocante bañado en salsa chijaukay salada servido con arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/8. Chijaukay de pollo con chaufa.jpg"
   },
   {
     id: "MENU-09",
@@ -1428,7 +1428,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     includesEntrance: true,
     popular: true,
     description: "Pollo apanado bañado en salsa tamarindo agridulce con arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Tipakay de pollo con chaufa.jpg"
   },
   {
     id: "MENU-10",
@@ -1440,7 +1440,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 20.00,
     includesEntrance: true,
     description: "Pollo salteado con salsa de frijol negro tausi y arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/10. Pollo con tausi y chaufa.jpg"
   },
   {
     id: "MENU-11",
@@ -1452,7 +1452,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 21.00,
     includesEntrance: true,
     description: "Rollitos de pollo en salsa especial acompañados de chaufa al wok. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/11. Pollo enrollado con chaufa.jpg"
   },
   {
     id: "MENU-12",
@@ -1464,7 +1464,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 20.00,
     includesEntrance: true,
     description: "Pollo aromatizado con ajo dorado al wok con arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/12. Pollo al ajo con chaufa.jpg"
   },
   {
     id: "MENU-13",
@@ -1477,7 +1477,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     includesEntrance: true,
     spicy: true,
     description: "Pollo salteado picantito con cebolla y arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/13. Pollo picante con chaufa.jpg"
   },
   {
     id: "MENU-14",
@@ -1489,7 +1489,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 20.00,
     includesEntrance: true,
     description: "Pollo con piña jugosa agridulce servido con arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/14. Pollo con piña y chaufa.jpg"
   },
   {
     id: "MENU-15",
@@ -1502,7 +1502,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     includesEntrance: true,
     popular: true,
     description: "Surtido taypa de carnes mixtas y verduras con arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/15. Taypa especial con chaufa.jpg"
   },
   {
     id: "MENU-16",
@@ -1514,7 +1514,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 21.00,
     includesEntrance: true,
     description: "Tallarín con mezcla especial de carnes y verduras al wok. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/16. Tallarín taypa.jpg"
   },
   {
     id: "MENU-17",
@@ -1527,7 +1527,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     includesEntrance: true,
     popular: true,
     description: "Wantanes crocantes cubiertos con salsa de carnes agridulces y chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/17. Kam lu wantán con chaufa.jpg"
   },
   {
     id: "MENU-18",
@@ -1539,7 +1539,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 21.00,
     includesEntrance: true,
     description: "Chancho asado salteado al ajo con arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/18. Chancho al ajo con chaufa.jpg"
   },
   {
     id: "MENU-19",
@@ -1551,7 +1551,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 21.00,
     includesEntrance: true,
     description: "Chancho asado en salsa de frijol negro tausi con chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/19. Chancho con tausi y chaufa.jpg"
   },
   {
     id: "MENU-20",
@@ -1563,7 +1563,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 21.00,
     includesEntrance: true,
     description: "Chancho asado agridulce con arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/20. Chancho con tamarindo y chaufa.jpg"
   },
   {
     id: "MENU-21",
@@ -1575,7 +1575,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 21.00,
     includesEntrance: true,
     description: "Chancho cha siu salteado con verduras chinas y arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/21. Chancho con verduras y chaufa.jpg"
   },
   {
     id: "MENU-22",
@@ -1588,7 +1588,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     includesEntrance: true,
     spicy: true,
     description: "Chancho en salsa picante con arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/22. Chancho picante con chaufa.jpg"
   },
   {
     id: "MENU-23",
@@ -1612,7 +1612,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 21.00,
     includesEntrance: true,
     description: "Alitas doradas crujientes al limón con arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Alitas fritas con limón.jpg"
   },
   {
     id: "MENU-25",
@@ -1625,7 +1625,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     includesEntrance: true,
     popular: true,
     description: "Langostinos al wok con verduras crujientes y arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1559742811-822863c46f83?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F16 Langostinos con brocoli.jpg"
   },
   {
     id: "MENU-26",
@@ -1637,7 +1637,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 22.00,
     includesEntrance: true,
     description: "Langostinos en salsa tausi negra con arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1559742811-822863c46f83?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F13 Langostinos con tamarindo.jpg"
   },
   {
     id: "MENU-27",
@@ -1649,7 +1649,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 22.00,
     includesEntrance: true,
     description: "Langostinos agridulces con trozos de piña y chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1559742811-822863c46f83?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F15 Langostinos con piña.jpg"
   },
   {
     id: "MENU-28",
@@ -1661,7 +1661,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 22.00,
     includesEntrance: true,
     description: "Langostinos aromatizados al ajo con arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1559742811-822863c46f83?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Langostinos dorados.jpg"
   },
   {
     id: "MENU-29",
@@ -1674,7 +1674,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     includesEntrance: true,
     spicy: true,
     description: "Langostinos en salsa picante con arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1559742811-822863c46f83?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F14 Langostinos con fideo chino.jpg"
   },
   {
     id: "MENU-30",
@@ -1734,7 +1734,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     takeawayPrice: 20.00,
     includesEntrance: true,
     description: "Champiñones salteados al wok con arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Champiñones fritos.jpg"
   },
   {
     id: "MENU-35",
@@ -1747,7 +1747,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     includesEntrance: true,
     popular: true,
     description: "Jugoso lomo saltado con cebolla, tomate y arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/H11 Lomo saltado.jpg"
   },
   {
     id: "MENU-36",
@@ -1760,7 +1760,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     includesEntrance: true,
     popular: true,
     description: "Fideos salteados, arroz chaufa, frejolito chino y trozos de pollo. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/H12 Carne con verduras.jpg"
   },
   {
     id: "MENU-37",
@@ -1773,7 +1773,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     includesEntrance: true,
     popular: true,
     description: "Crujientes trozos de chicharrón de pollo con limón y arroz chaufa. Incluye Entrada.",
-    image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Chicharrón de pollo con limón.jpg"
   },
 
   // ================= 6. COMBOS =================
@@ -1788,7 +1788,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     servings: "1 Persona",
     popular: true,
     description: "Combo personal completo: tallarín saltado con pollo, arroz chaufa al wok y wantanes fritos crujientes.",
-    image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/1. Chaufa con pollo y wantán frito.jpg"
   },
   {
     id: "A2",
@@ -1799,7 +1799,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 22.00,
     servings: "1 Persona",
     description: "Pechuga de pollo con verduras al wok acompañada de arroz chaufa.",
-    image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/6. Pollo con verduras y chaufa.jpg"
   },
   {
     id: "A3",
@@ -1811,7 +1811,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     servings: "1 Persona",
     popular: true,
     description: "¡Doble sabor favorito! Pollo tipakay agridulce, pollo chijaukay en salsa salada y arroz chaufa.",
-    image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Tipakay de pollo con chaufa.jpg"
   },
   {
     id: "A4",
@@ -1856,7 +1856,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     servings: "1 Persona",
     popular: true,
     description: "Combinación de lujo: wantán especial kam lu, pollo chijaukay crocante y arroz chaufa.",
-    image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/17. Kam lu wantán con chaufa.jpg"
   },
   {
     id: "A8",
@@ -1924,7 +1924,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     servings: "1 Persona",
     popular: true,
     description: "Sabroso lomo saltado de carne de res jugosa servido con arroz chaufa.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/H11 Lomo saltado.jpg"
   },
   {
     id: "A14",
@@ -1961,7 +1961,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     servings: "2 Personas",
     popular: true,
     description: "Combo completo dúo: 1/2 docena de wantán frito, 1 porción de chijaukay de pollo, 2 porciones de arroz chaufa y 1 gaseosa de 1/2 Lt.",
-    image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/1. Chaufa con pollo y wantán frito.jpg"
   },
   {
     id: "B2",
@@ -1984,7 +1984,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 40.00,
     servings: "2 Personas",
     description: "1 porción de pollo tipakay dulce y 2 generosas porciones de arroz chaufa.",
-    image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Tipakay de pollo con chaufa.jpg"
   },
   {
     id: "B4",
@@ -2085,7 +2085,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     servings: "2 Personas",
     popular: true,
     description: "Kam lu wantán especial con carnes y salsa tamarindo más 2 porciones de chaufa.",
-    image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/F2 Kam lu wantán especial.jpg"
   },
 
   // Combos 3 Personas
@@ -2099,7 +2099,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     servings: "3 Personas",
     popular: true,
     description: "Banquete para 3: Chijaukay 2 sabores, pollo con verduras al wok y chaufa de pollo tamaño familiar.",
-    image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/8. Chijaukay de pollo con chaufa.jpg"
   },
   {
     id: "C2",
@@ -2123,7 +2123,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     servings: "3-4 Personas",
     popular: true,
     description: "Súper festín: Tallarín con pollo en trozos, pollo enrollado oriental, pollo tipakay y fuente de chaufa familiar.",
-    image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/3. Tallarín con pollo.jpg"
   },
 
   // Combos 4 Personas
@@ -2137,7 +2137,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     servings: "4-5 Personas",
     popular: true,
     description: "Gran banquete familiar: porción de alitas fritas, pollo picante a la plancha, chancho con piña, chijaukay de pollo, chaufa de pollo familiar y gaseosa 1.5 Lt.",
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Alitas fritas con limón.jpg"
   },
   {
     id: "D2",
@@ -2205,7 +2205,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Gaseosas",
     price: 2.50,
     description: "Coca Cola personal de vidrio helada.",
-    image: "/uploads/Coca cola 296 ml..jpg"
+    image: "/uploads/Coca cola 296 ml.jpg"
   },
   {
     id: "GAS-FAN-296",
@@ -2215,7 +2215,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Gaseosas",
     price: 2.50,
     description: "Gaseosa Fanta naranja personal.",
-    image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Fanta 296 ml.jpg"
   },
   {
     id: "GAS-IK-600",
@@ -2226,7 +2226,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 5.00,
     popular: true,
     description: "Inca Kola botella personal 600 ml helada.",
-    image: "/uploads/Inca kola 296 ml.jpg"
+    image: "/uploads/Inca kola 600 ml.jpg"
   },
   {
     id: "GAS-CC-600",
@@ -2237,7 +2237,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 5.00,
     popular: true,
     description: "Coca Cola botella personal 600 ml helada.",
-    image: "/uploads/Coca cola 600 ml..jpg"
+    image: "/uploads/Coca cola 600 ml.jpg"
   },
   {
     id: "GAS-FAN-500",
@@ -2247,7 +2247,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Gaseosas",
     price: 5.00,
     description: "Gaseosa Fanta medio litro.",
-    image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/fanta medio lt.jpg"
   },
   {
     id: "GAS-SPR-500",
@@ -2257,7 +2257,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Gaseosas",
     price: 5.00,
     description: "Gaseosa Sprite lima-limón medio litro.",
-    image: "/uploads/Sprite medio Lt..jpg"
+    image: "/uploads/Sprite medio Lt.jpg"
   },
   {
     id: "GAS-AGUA",
@@ -2278,7 +2278,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 6.00,
     popular: true,
     description: "Botella gordita de vidrio de Inca Kola bien fría.",
-    image: "/uploads/Inca kola 296 ml.jpg"
+    image: "/uploads/Inca gordita.jpg"
   },
   {
     id: "GAS-IK-1L",
@@ -2288,7 +2288,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Gaseosas",
     price: 10.00,
     description: "Botella de Inca Kola de 1 Litro.",
-    image: "/uploads/Inca kola 296 ml.jpg"
+    image: "/uploads/Inca kola de 1 Lt..jpg"
   },
   {
     id: "GAS-CC-1L",
@@ -2309,7 +2309,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 12.00,
     popular: true,
     description: "Botella de Inca Kola familiar de 1.5 Litros.",
-    image: "/uploads/Inca kola 296 ml.jpg"
+    image: "/uploads/Inca kola 1.5 Lt..jpg"
   },
   {
     id: "GAS-CC-15L",
@@ -2331,7 +2331,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 15.00,
     popular: true,
     description: "Botella grande de Inca Kola de 2.5 Litros.",
-    image: "/uploads/Inca kola 296 ml.jpg"
+    image: "/uploads/Inca kola 2.5 Lt..jpg"
   },
   {
     id: "GAS-CC-25L",
@@ -2352,7 +2352,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     subCategory: "Gaseosas",
     price: 15.00,
     description: "Botella grande de Fanta naranja de 2.5 Litros.",
-    image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Fanta 2.5 Lt..jpg"
   },
 
   // Vinos
@@ -2428,7 +2428,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 9.00,
     popular: true,
     description: "Cerveza Cusqueña Dorada, Trigo o Negra heladita.",
-    image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&w=600&q=80"
+    image: "/uploads/Cuzqueña.jpg"
   },
 
   // Bebidas calientes
