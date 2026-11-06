@@ -466,7 +466,7 @@ export const INITIAL_PRODUCTS: MenuItem[] = [
     price: 23.00,
     popular: true,
     description: "El más pedido: arroz al wok bien ahumado con pollo, chancho asado cha siu, langostinos, tortilla picada y cebollita china.",
-    image: "/uploads/15. Taypa especial con chaufa.jpg"
+    image: "/uploads/G1 Chaufa especial.jpg"
   },
   {
     id: "G2",
